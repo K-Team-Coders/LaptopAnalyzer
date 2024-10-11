@@ -62,15 +62,7 @@ export default {
   data() {
     return {
       statements: [
-        { id: 1, category: "Заявка №976239", name: "history" },
-        { id: 2, category: "Заявка №934676", name: "history" },
-        { id: 3, category: "Заявка №345743", name: "history" },
-        { id: 4, category: "Заявка №375893", name: "history" },
-        { id: 5, category: "Заявка №239478", name: "history" },
-        { id: 6, category: "Заявка №872387", name: "history" },
-        { id: 7, category: "Заявка №238783", name: "history" },
-        { id: 8, category: "Заявка №825878", name: "history" },
-        { id: 9, category: "Заявка №478734", name: "history" },
+        { id: 1, category: "Заключение № 0000001", name: "history" },
       ],
     };
   },
