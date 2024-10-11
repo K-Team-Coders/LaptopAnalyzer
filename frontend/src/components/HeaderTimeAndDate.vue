@@ -1,10 +1,10 @@
 <template>
-  <div class="text-center text-neutral-600 duration-300">
-    <p class="text-7xl">
-      {{ localeTime }}
-    </p>
+  <div class="flex items-center w-full justify-center text-neutral-600 duration-300 font-stengazeta p-2.5">
     <p class="text-lg">
       {{ localeDate }}
+    </p>
+    <p class="text-lg ml-1">
+      {{ localeTime }}
     </p>
   </div>
 </template>

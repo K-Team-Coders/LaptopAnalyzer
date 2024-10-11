@@ -31,9 +31,11 @@
         </div>
 
         <div
-          class="flex flex-col flex-grow h-full w-full mt-2 mb-2 border-t border-gray-300"
+          class="flex flex-col h-full w-full mt-2 mb-2 border-t border-gray-300"
         >
-          <p class="pt-4 font-stengazeta text-lg text-center">Последние обращения</p>
+          <p class="pt-4 font-stengazeta text-lg text-center">
+            Последние обращения
+          </p>
           <router-link
             v-for="setting in statementNumber"
             :key="setting.name"
@@ -60,15 +62,15 @@ export default {
   data() {
     return {
       statements: [
-        { id: 1, category: "Обращение №1", name: "history" },
-        { id: 2, category: "Обращение №2", name: "history" },
-        { id: 3, category: "Обращение №3", name: "history" },
-        { id: 4, category: "Обращение №4", name: "history" },
-        { id: 5, category: "Обращение №5", name: "history" },
-        { id: 6, category: "Обращение №6", name: "history" },
-        { id: 7, category: "Обращение №7", name: "history" },
-        { id: 8, category: "Обращение №8", name: "history" },
-        { id: 9, category: "Обращение №9", name: "history" },
+        { id: 1, category: "Заявка №976239", name: "history" },
+        { id: 2, category: "Заявка №934676", name: "history" },
+        { id: 3, category: "Заявка №345743", name: "history" },
+        { id: 4, category: "Заявка №375893", name: "history" },
+        { id: 5, category: "Заявка №239478", name: "history" },
+        { id: 6, category: "Заявка №872387", name: "history" },
+        { id: 7, category: "Заявка №238783", name: "history" },
+        { id: 8, category: "Заявка №825878", name: "history" },
+        { id: 9, category: "Заявка №478734", name: "history" },
       ],
     };
   },
@@ -89,10 +91,17 @@ export default {
           route: "/statement",
           isActive: this.$route.path === "/statement",
         },
+        {
+          category: "Статистика",
+          name: "dashboard",
+          classed: "w-8 h-8 ml-1 ",
+          route: "/dashboard",
+          isActive: this.$route.path === "/dashboard",
+        },
       ];
     },
     statementNumber() {
-      return this.statements.slice(0, 8).map((statement) => ({
+      return this.statements.slice(0, 7).map((statement) => ({
         ...statement,
         classed: "w-8 h-8 ml-1",
         route: `/statement/${statement.id}`,

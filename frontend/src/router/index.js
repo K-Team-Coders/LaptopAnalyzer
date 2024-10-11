@@ -19,6 +19,11 @@ const routes = [
     name: "statement(id)",
     component: HistoryItem,
   },
+  {
+    path: "/dashboard/",
+    name: "dashboard",
+    component: () => import("@/views/Dashboard.vue"),
+  },
 ];
 
 const router = createRouter({

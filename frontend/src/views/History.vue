@@ -24,7 +24,7 @@
         >
           <span class="loader"></span>
           <p class="text-black pt-2 font-stengazeta text-sm">
-            Идет загрузка...
+            Идет загрузка обращений...
           </p>
         </div>
         <div
