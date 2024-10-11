@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bartina";
+  src: url("./fonts/Bartina-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bartina";
+  src: url("./fonts/Bartina-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bartina";
+  src: url("./fonts/Bartina-Light.ttf") format("truetype");
+  font-weight: 300; /* Light */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bartina";
+  src: url("./fonts/Bartina-Semibold.ttf") format("truetype");
+  font-weight: 600; /* SemiBold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bartina";
+  src: url("./fonts/Bartina-Thin.ttf") format("truetype");
+  font-weight: 100; /* Thin */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Stengazeta";
+  src: url("./fonts/Stengazeta-Regular_1.ttf");
+}

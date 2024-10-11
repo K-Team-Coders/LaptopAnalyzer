@@ -2,17 +2,23 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    darkMode: JSON.parse(localStorage.getItem("darkMode")) || false,
+    isOpenSidebar:
+      localStorage.getItem("isOpenSidebar") !== null
+        ? localStorage.getItem("isOpenSidebar") === "true"
+        : true,
+  },
+  getters: {
+    isOpenSidebar: (state) => state.isOpenSidebar,
   },
   mutations: {
-    toggleDarkMode(state) {
-      state.darkMode = !state.darkMode;
-      localStorage.setItem("darkMode", state.darkMode);
+    toggleSidebar(state) {
+      state.isOpenSidebar = !state.isOpenSidebar;
+      localStorage.setItem("isOpenSidebar", state.isOpenSidebar);
     },
   },
   actions: {
-    toggleDarkMode({ commit }) {
-      commit("toggleDarkMode");
+    toggleSidebar({ commit }) {
+      commit("toggleSidebar");
     },
   },
 });

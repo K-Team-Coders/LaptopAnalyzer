@@ -1,4 +1,4 @@
-# templates
+# laptopanalyzer
 
 ## Project setup
 ```

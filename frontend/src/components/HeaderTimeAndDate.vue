@@ -1,9 +1,9 @@
 <template>
-  <div class="dark:text-white text-center text-neutral-600 duration-300 text-2xl">
-    <p class="text-7xl font-monster">
+  <div class="text-center text-neutral-600 duration-300">
+    <p class="text-7xl">
       {{ localeTime }}
     </p>
-    <p class="text-lg font-monster">
+    <p class="text-lg">
       {{ localeDate }}
     </p>
   </div>
