@@ -32,16 +32,4 @@ class ResultBase(BaseModel):
     defect_class: str
 
 
-class DataBase(BaseModel):
-    firmName: str
-    modelName: str
-    creationDate: str
-    expluatationDate: str
-    serialNumber: str
-    clientName: str
-    clientPhone: str
-    clientAddress: str
-    clientDefects: str
-    executorName: str
-    executorPhone: str
-    serviceCenterAddress: str
+
