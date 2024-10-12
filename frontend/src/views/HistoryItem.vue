@@ -493,7 +493,7 @@ export default {
       try {
         this.isSending = true;
         const response = await axios.post(
-          `http://${process.env.VUE_APP_IP}/history`,
+          `http://${process.env.VUE_APP_IP}history`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -508,7 +508,7 @@ export default {
     },
     getHistoryItem() {
       axios
-        .get(`http://${process.env.VUE_APP_IP}/result/${this.id}`)
+        .get(`http://${process.env.VUE_APP_IP}:8000/result/${this.id}`)
         .then((response) => {
           this.updateHistoryData(response.data);
         })
