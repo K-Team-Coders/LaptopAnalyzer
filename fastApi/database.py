@@ -1,20 +1,38 @@
-from typing import AsyncGenerator
-
-from sqlalchemy import MetaData
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
+from sqlalchemy import MetaData, create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+from fastApi.services.appeal_operations.models import Base
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-Base = declarative_base()
+# Load environment variables from .env file
+load_dotenv()
+
+# Fetching environment variables
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_port = os.getenv("DB_PORT")
+
+# Synchronous Database URL
+DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+
+# Create a synchronous SQLAlchemy engine
+engine = create_engine(DATABASE_URL, echo=True)
+
+# Create a synchronous session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Bind the engine to Base's metadata
+Base.metadata.create_all(engine)
 
 
-engine = create_async_engine(DATABASE_URL)
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
+# Synchronous session generator
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
