@@ -65,47 +65,4 @@ class DocFormater():
             os.remove(path)
         logger.success("Document has been created!")
         return save_path
-    
-    
-if __name__ == '__main__':
-    template_data = {
-        'appeal_order': '000001',
-    'executor_name': 'Иван Долбоеб',
-    'executor_phone': '898222221',
-    'executor_address': 'Плоховская 67Б',
-    'customer_name': 'Богдан Горбунов',
-    'customer_address': 'Самосир, Дворец Позднякова',
-    'customer_phone': '898222221',
-    'laptop_firm': 'Акваминерале',
-    'laptop_model': 'Уставной',
-    'laptop_serial_number': '82142141',
-    'commission_date': '24.03.2024',
-    'created_at': '24.03.2024' ,
-    'content': 
-         [
-    {"photo": f"{Path.cwd().joinpath('img', '2023-12-26 15-38-08.jpg')}", 
-     "defects": [
-         {"name": "Scrath",
-          "coords": [12, 13, 1000, 1000]}, 
-         {"name": "Scrath",
-          "coords": [12, 13, 1000, 1000]}]
-     },
-    {"photo": f"{Path.cwd().joinpath('img', '2024-01-15 14-38-21.jpg')}", 
-     "defects": [
-         {"name": "Scrath",
-          "coords": [12, 13, 1000, 1000]}, 
-         {"name": "Scrath",
-          "coords": [12, 13, 250, 250]}]
-     },
-    {"photo": f"{Path.cwd().joinpath('img', '2024-01-15 16-28-22.jpg')}", 
-     "defects": [
-         {"name": "Scrath",
-          "coords": [12, 13, 1000, 1000]}, 
-        {"name": "Scrath",
-          "coords": [12, 13, 1000, 1000]}]
-     },
-    ]
-    }
-    doc_formatter = DocFormater()
-    doc_formatter.make_and_save_document(template_data)
-    
+        

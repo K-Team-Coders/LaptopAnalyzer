@@ -89,6 +89,13 @@ export default {
           route: "/dashboard",
           isActive: this.$route.path === "/dashboard",
         },
+        {
+          category: "Дообучение",
+          name: "settings",
+          classed: "w-8 h-8 ml-1 ",
+          route: "/training",
+          isActive: this.$route.path === "/training",
+        },
       ];
     },
     ...mapGetters(["statementNumber"]),
