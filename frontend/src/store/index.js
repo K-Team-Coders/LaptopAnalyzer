@@ -6,17 +6,26 @@ export default createStore({
       localStorage.getItem("isOpenSidebar") !== null
         ? localStorage.getItem("isOpenSidebar") === "true"
         : true,
-    statements: [],
+    statements: [
+      {
+        uuids: [
+          "37d8b213-aedb-4830-9689-b441d752b514",
+          "37d8b213-aedb-4830-9689-b441d752b545",
+          "37d8b213-aedb-4830-9689-b441d752b421",
+        ],
+      },
+    ],
   },
   getters: {
     isOpenSidebar: (state) => state.isOpenSidebar,
     statementNumber: (state) => {
-      return state.statements
-        .slice(Math.max(state.statements.length - 7, 0))
-        .map((statement) => ({
-          ...statement,
+      const allUuids = state.statements.flatMap((statement) => statement.uuids);
+      const recentUuids = allUuids.slice(-7);
+      return recentUuids
+        .map((uuid) => ({
+          uuid,
           classed: "w-8 h-8 ml-1",
-          route: `/statement/${statement.id}`,
+          route: `/statement/${uuid}`,
         }))
         .reverse();
     },
@@ -37,9 +46,10 @@ export default createStore({
     },
     fetchStatements({ commit }) {
       axios
-        .get(`http://${process.env.VUE_APP_IP}/statement`)
+        .get(`http://${process.env.VUE_APP_IP}:8000/result/uuids`, {})
         .then((response) => {
           commit("setStatements", response.data);
+          console.log("Statements fetched:", response.data);
         })
         .catch((error) => {
           console.error("Error fetching statements:", error);

@@ -35,13 +35,13 @@
           </p>
           <router-link
             v-for="setting in statementNumber"
-            :key="setting.category"
+            :key="setting.uuid"
             :to="setting.route"
             custom
             v-slot="{ navigate, isActive, isExactActive }"
           >
             <SidebarCategory
-              :category="setting.category"
+              :category="setting.uuid"
               name="history"
               :classed="setting.classed"
               :isActive="isActive || isExactActive"
@@ -60,11 +60,7 @@ export default {
   components: {
     SidebarCategory,
   },
-  data() {
-    return {
-      statements: [],
-    };
-  },
+  data() {},
   computed: {
     services() {
       return [
@@ -99,21 +95,6 @@ export default {
       ];
     },
     ...mapGetters(["statementNumber"]),
-  },
-  methods: {
-    getLastStatements() {
-      axios
-        .get(`http://${process.env.VUE_APP_IP}/statement`)
-        .then((response) => {
-          this.statements = response.data;
-        })
-        .catch((error) => {
-          console.error("Error fetching statements:", error);
-        });
-    },
-  },
-  created() {
-    this.$store.dispatch("fetchStatements");
   },
 };
 </script>
