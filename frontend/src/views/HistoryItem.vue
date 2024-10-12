@@ -454,10 +454,8 @@ export default {
         return;
       }
       const formData = new FormData(event.target);
-      this.getDate();
       formData.append("firmName", this.firmName);
       formData.append("modelName", this.modelName);
-      formData.append("creationDate", this.creationDate);
       formData.append("expluatationDate", this.expluatationDate);
       formData.append("serialNumber", this.serialNumber);
       formData.append("clientName", this.clientName);
@@ -469,9 +467,11 @@ export default {
       formData.append("serviceCenterAddress", this.serviceCenterAddress);
       formData.append("conclusionText", this.conclusionText);
 
-      this.formDates.fileArr.forEach((file, index) => {
-        formData.append(`file${index}`, file);
-      });
+      if (this.formDates.fileArr && this.formDates.fileArr.length) {
+        this.formDates.fileArr.forEach((file, index) => {
+          formData.append(`files`, file);
+        });
+      }
       try {
         this.isSending = true;
         const response = await axios.post(

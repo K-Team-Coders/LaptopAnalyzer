@@ -88,7 +88,7 @@
                   <div class="flex justify-center w-full">
                     <div class="flex justify-center w-full">
                       <img
-                        :src="fileArr[this.activeIndex]"
+                        :src="fileArr[activeIndex].url"
                         class="w-auto h-96 rounded-lg"
                         alt="active image"
                       />
@@ -138,7 +138,10 @@
                       }"
                       @click="setActive(index)"
                     >
-                      <img :src="image" class="w-full h-full object-cover" />
+                      <img
+                        :src="image.url"
+                        class="w-full h-full object-cover"
+                      />
                       <button
                         @click.stop="removeFile(index)"
                         type="button"
@@ -421,6 +424,8 @@
 <script>
 import axios from "axios";
 
+import { mapActions } from "vuex";
+
 export default {
   data() {
     return {
@@ -441,9 +446,6 @@ export default {
       errors: {},
       activeIndex: 0,
 
-      formDates: {
-        fileArr: [],
-      },
       isSending: false,
     };
   },
@@ -455,31 +457,17 @@ export default {
   },
 
   methods: {
+    ...mapActions(["fetchStatements"]),
     handleFiles(event) {
-      const files = event.target.files;
+      const files = Array.from(event.target.files);
+      const newFiles = files.map((file) => ({
+        url: URL.createObjectURL(file),
+        file,
+      }));
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith("image/")) {
-          const isDuplicate = this.formDates.fileArr.some(
-            (existingFile) => existingFile.name === file.name
-          );
-
-          if (!isDuplicate) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this.fileArr.push(e.target.result);
-            };
-            reader.readAsDataURL(file);
-            this.formDates.fileArr.push(file);
-          }
-        }
-      }
-      // Очистка input после обработки файлов
-      event.target.value = "";
+      this.fileArr = [...this.fileArr, ...newFiles];
     },
-    async handleSubmit(event) {
-      event.preventDefault();
+    validateFields() {
       this.errors = {};
       if (!this.fileArr.length) {
         this.errors.files = "Поле обязательно для заполнения.";
@@ -516,46 +504,62 @@ export default {
         this.errors.serviceCenterAddress = "Поле обязательно для заполнения.";
       }
 
-      if (Object.keys(this.errors).length > 0) {
-        return;
-      }
-      const formData = new FormData(event.target);
+      return Object.keys(this.errors).length === 0;
+    },
+    async handleSubmit() {
+      if (this.validateFields()) {
+        const formData = new FormData(event.target);
 
-      formData.append("firmName", this.firmName);
-      formData.append("modelName", this.modelName);
-      formData.append("expluatationDate", this.expluatationDate);
-      formData.append("serialNumber", this.serialNumber);
-      formData.append("clientName", this.clientName);
-      formData.append("clientPhone", this.clientPhone);
-      formData.append("clientAddress", this.clientAddress);
-      formData.append("clientDefects", this.clientDefects);
-      formData.append("executorName", this.executorName);
-      formData.append("executorPhone", this.executorPhone);
-      formData.append("serviceCenterAddress", this.serviceCenterAddress);
+        formData.append("firmName", this.firmName);
+        formData.append("modelName", this.modelName);
+        formData.append("expluatationDate", this.expluatationDate);
+        formData.append("serialNumber", this.serialNumber);
+        formData.append("clientName", this.clientName);
+        formData.append("clientPhone", this.clientPhone);
+        formData.append("clientAddress", this.clientAddress);
+        formData.append("clientDefects", this.clientDefects);
+        formData.append("executorName", this.executorName);
+        formData.append("executorPhone", this.executorPhone);
+        formData.append("serviceCenterAddress", this.serviceCenterAddress);
 
-      if (this.formDates.fileArr && this.formDates.fileArr.length) {
-        this.formDates.fileArr.forEach((file, index) => {
-          formData.append(`files`, file); // Добавление каждого файла
-        });
+        if (this.fileArr && this.fileArr.length) {
+          this.fileArr.forEach((fileObj, index) => {
+            formData.append(`files`, fileObj.file);
+          });
+        }
+        try {
+          this.isSending = true;
+          const response = await axios.post(
+            `http://${process.env.VUE_APP_IP_CREATE_TZ}/add_data`,
+            formData,
+            {
+              headers: {
+                accept: "application/json",
+              },
+            }
+          );
+          console.log("Response from server:", response.data);
+          this.clearForm();
+          this.fetchStatements();
+          this.$router.push(`/statement/${response.data.id}`);
+          this.isSending = false;
+        } catch (error) {
+          console.error("Error sending data:", error);
+          this.isSending = false;
+        }
       }
-      console.log("FormData:", [...formData]);
-      try {
-        this.isSending = true;
-        const response = await axios.post(
-          `http://${process.env.VUE_APP_IP}:8000/add_data`,
-          formData,
-          {
-            headers: {
-              accept: "application/json",
-            },
-          }
-        );
-        console.log("Response from server:", response.data);
-        this.isSending = false;
-      } catch (error) {
-        console.error("Error sending data:", error);
-        this.isSending = false;
-      }
+    },
+    clearForm() {
+      this.fileArr = [];
+      this.activeIndex = 0;
+      this.firmName = "";
+      this.modelName = "";
+      this.expluatationDate = "";
+      this.serialNumber = "";
+      this.clientName = "";
+      this.clientPhone = "";
+      this.clientEmail = "";
+      this.errors = {};
     },
     setActive(index) {
       this.activeIndex = index;
@@ -565,10 +569,10 @@ export default {
       this.$refs.dropzoneInput.click();
     },
     removeFile(index) {
+      URL.revokeObjectURL(this.fileArr[index].url);
       this.fileArr.splice(index, 1);
-      this.formDates.fileArr.splice(index, 1);
-      if (index === this.activeIndex) {
-        this.activeIndex = Math.max(0, index - 1);
+      if (this.activeIndex >= this.fileArr.length) {
+        this.activeIndex = this.fileArr.length - 1;
       }
     },
     onInput(event) {

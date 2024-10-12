@@ -32,6 +32,10 @@ export default {
   },
   methods: {
     ...mapActions(["toggleSidebar"]),
+    ...mapActions(["fetchStatements"]),
+  },
+  mounted() {
+    // this.fetchStatements();
   },
 };
 </script>

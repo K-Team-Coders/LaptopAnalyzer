@@ -52,17 +52,7 @@ export default {
   methods: {},
   mounted() {
     this.$refs.input.focus();
-    this.isLoading = true;
-    axios
-      .get(`http://${process.env.VUE_APP_IP}/history`)
-      .then((response) => {
-        const history = response.data;
-        this.history = history;
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        this.isLoading = false;
-      });
+    this.isLoading = false;
   },
 };
 </script>
