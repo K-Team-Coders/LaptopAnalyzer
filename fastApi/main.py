@@ -16,6 +16,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import get_db
+from fastApi.services.appeal_operations.schemas import UpdateAppealRequest
 from services.appeal_operations.models import *
 
 deprecations.SILENCE_UBER_WARNING = True
@@ -74,13 +75,17 @@ async def upload_data(
     file_paths = await save_files(files)  # Ensure this returns correct paths
 
     # Call the model to process the files and get defect boxes and classes (if needed)
-    boxes = []
-    classes = []
-    for file in file_paths:
-        box, defect_class = model_usage(file)  # Assuming this function returns the coordinates and class
-        boxes.append(box)
-        classes.append(defect_class)
+    boxes = []  # List to hold bounding boxes
+    classes = []  # List to hold defect classes
 
+    # Process each file to get boxes and classes
+    for file in file_paths:
+        box, defect_class = model_usage(file)
+        boxes.append(box if box else [[]])  # Ensure it returns a list
+        classes.append(defect_class if defect_class else ["unknown"])
+
+    print(f"Boxes: {boxes}")
+    print(f"Classes: {classes}")
     # Create appeal
     appeal = Appeal(
         laptop_firm=firmName,
@@ -91,24 +96,23 @@ async def upload_data(
         customer=customer,
         executor=executor
     )
-
+    result = Result(
+        appeal_id=appeal.uuid,
+        defect_photo_path=file_paths,  # This should be a list of file paths
+        defect_coords=boxes,  # Store list of boxes
+        defect_class=classes  # Store list of classes
+    )
+    print("Loading")
     # Add to session and commit
     db.add(customer)
     db.add(executor)
     db.add(appeal)
+    db.add(result)
     db.commit()  # Commit to generate the UUID for appeal
 
     # Create result after the appeal is committed
-    result = Result(
-        appeal_id=appeal.uuid,
-        defect_photo_path=file_paths,
-        defect_coords=boxes,
-        defect_class=classes
-    )
-    db.add(result)
-    db.commit()
 
-    return {"result_uuid": str(result.uuid)}
+    return {"result_uuid": "succeed"}
 
 
 @app.get("/result/{uuid}")
@@ -197,6 +201,49 @@ async def get_doc_by_uuid(uuid: str, db: Session = Depends(get_db)):
     # Return the generated document as a response
     return FileResponse(save_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         filename=os.path.basename(save_path))
+
+
+@app.put("/update_appeal/{uuid}")
+async def update_appeal(uuid: str, update_data: UpdateAppealRequest, db: Session = Depends(get_db)):
+    # Fetch the appeal by UUID
+    appeal = db.query(Appeal).filter(Appeal.uuid == uuid).first()
+    if not appeal:
+        raise HTTPException(status_code=404, detail="Appeal not found")
+
+    # Update the customer details
+    customer = db.query(Customer).filter(Customer.uuid == appeal.customer_id).first()
+    if update_data.clientName:
+        customer.name = update_data.clientName
+    if update_data.clientPhone:
+        customer.phone_number = update_data.clientPhone
+    if update_data.clientAddress:
+        customer.address = update_data.clientAddress
+
+    # Update the executor details
+    executor = db.query(Executor).filter(Executor.uuid == appeal.executor_id).first()
+    if update_data.executorName:
+        executor.name = update_data.executorName
+    if update_data.executorPhone:
+        executor.phone_number = update_data.executorPhone
+    if update_data.serviceCenterAddress:
+        executor.address = update_data.serviceCenterAddress
+
+    # Update the appeal details
+    if update_data.firmName:
+        appeal.laptop_firm = update_data.firmName
+    if update_data.modelName:
+        appeal.laptop_model = update_data.modelName
+    if update_data.expluatationDate:
+        appeal.commission_date = update_data.expluatationDate
+    if update_data.serialNumber:
+        appeal.laptop_serial_number = update_data.serialNumber
+    if update_data.clientDefects:
+        appeal.customer_text = update_data.clientDefects
+
+    # Commit changes to the database
+    db.commit()
+
+    return {"message": "Appeal updated successfully", "appeal": str(appeal.uuid)}
 
 
 if __name__ == '__main__':
