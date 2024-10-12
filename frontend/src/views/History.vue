@@ -24,7 +24,7 @@
         >
           <span class="loader"></span>
           <p class="text-black pt-2 font-stengazeta text-sm">
-            Идет загрузка обращений...
+            Идет загрузка заключений...
           </p>
         </div>
         <div
@@ -32,7 +32,7 @@
           v-else-if="this.items.length == 0"
         >
           <p class="text-neutral-200 text-3xl pt-2 font-stengazeta text-center">
-            Обращений нет
+            Заключений нет
           </p>
         </div>
       </div>

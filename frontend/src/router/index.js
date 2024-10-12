@@ -20,7 +20,7 @@ const routes = [
     component: HistoryItem,
   },
   {
-    path: "/dashboard/",
+    path: "/dashboard",
     name: "dashboard",
     component: () => import("@/views/Dashboard.vue"),
   },

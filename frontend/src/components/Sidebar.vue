@@ -4,13 +4,14 @@
       class="flex relative flex-col items-center w-64 h-full overflow-hidden text-gray-700 bg-gray-100 rounded shadow-lg shadow-[#c9c9c9]"
     >
       <div class="flex justify-center items-center w-full px-3 mt-4">
-        <div class="flex flex-col mt-4 ml-2 text-[black]">
-          <span class="text-5xl leading-[0.5] font-stengazeta tracking-[1px]"
-            >Магистр</span
-          >
-          <span class="text-center text-[11px] font-stengazeta ml-[3px]"
-            >интеллектуальный помощник</span
-          >
+        <img class="w-12 h-12" src="@/img/logo.png" />
+        <div class="flex flex-col justify-start mt-4 ml-2 text-[black]">
+          <p class="text-5xl leading-[0.5] font-stengazeta">
+            Магистр
+          </p>
+          <p class="text-[11px] font-stengazeta">
+            интеллектуальный помощник
+          </p>
         </div>
       </div>
       <div class="w-full px-2">
@@ -34,7 +35,7 @@
           class="flex flex-col h-full w-full mt-2 mb-2 border-t border-gray-300"
         >
           <p class="pt-4 font-stengazeta text-lg text-center">
-            Последние обращения
+            Последние заключения
           </p>
           <router-link
             v-for="setting in statementNumber"
@@ -77,7 +78,7 @@ export default {
           isActive: this.$route.path === "/",
         },
         {
-          category: "История обращений",
+          category: "История заключений",
           name: "news",
           classed: "w-8 h-8 ml-1",
           route: "/statement",
