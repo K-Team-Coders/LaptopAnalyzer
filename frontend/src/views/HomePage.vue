@@ -121,7 +121,7 @@
                     >
                       <img :src="image" class="w-full h-full object-cover" />
                       <button
-                        @click="removeFile(index)"
+                        @click.stop="removeFile(index)"
                         type="button"
                         class="absolute top-1 right-1 bg-red-600 hover:bg-red-700 duration-75 p-1 w-6 h-6 rounded-full"
                       >
@@ -393,8 +393,10 @@ export default {
     removeFile(index) {
       this.fileArr.splice(index, 1);
       this.formDates.fileArr.splice(index, 1);
+      if (index === this.activeIndex) {
+        this.activeIndex = Math.max(0, index - 1);
+      }
     },
   },
-  watch: {},
 };
 </script>
