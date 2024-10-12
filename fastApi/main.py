@@ -4,6 +4,7 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import List
 
+import loguru
 from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecations
 from starlette.responses import FileResponse
@@ -96,22 +97,26 @@ async def upload_data(
         customer=customer,
         executor=executor
     )
+
+
+    print("Loading")
+    # Add to session and commit
+    db.add(customer)
+    db.add(executor)
+    db.add(appeal)
+    db.commit()  # Commit to generate the UUID for appeal
+
+    # Create result after the appeal is committed
     result = Result(
         appeal_id=appeal.uuid,
         defect_photo_path=file_paths,  # This should be a list of file paths
         defect_coords=boxes,  # Store list of boxes
         defect_class=classes  # Store list of classes
     )
-    print("Loading")
-    # Add to session and commit
-    db.add(customer)
-    db.add(executor)
-    db.add(appeal)
     db.add(result)
-    db.commit()  # Commit to generate the UUID for appeal
 
-    # Create result after the appeal is committed
 
+    db.commit()
     return {"result_uuid": "succeed"}
 
 
@@ -128,6 +133,7 @@ def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Result not found for this appeal")
 
     # Format and return the response
+    print (appeal, result)
     return format_appeal_response(appeal, result)
 
 

@@ -20,8 +20,10 @@ def format_appeal_response(appeal: Appeal, result: Result):
         'content': []
     }
 
+
     # Creating the defects content
     for index, file_path in enumerate(result.defect_photo_path):
+        print(result)
         # Ensure index is within bounds for defect_class and defect_coords
         if index < len(result.defect_class) and index < len(result.defect_coords):
             defects = []
@@ -39,5 +41,5 @@ def format_appeal_response(appeal: Appeal, result: Result):
         else:
             # Optionally log or handle the case where indices are out of bounds
             print(f"Warning: Index {index} is out of range for defect_class or defect_coords.")
-
+    
     return response
