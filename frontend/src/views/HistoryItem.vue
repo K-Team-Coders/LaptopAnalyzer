@@ -99,17 +99,6 @@
                   class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </label>
-              <p class="text-center text-sm p-1">
-                или <span class="font-semibold"> загрузите файл </span>
-              </p>
-              <div class="">
-                <input
-                  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer"
-                  aria-describedby="file_input_help"
-                  id="file_input"
-                  type="file"
-                />
-              </div>
             </div>
           </div>
         </div>

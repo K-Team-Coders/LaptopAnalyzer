@@ -21,11 +21,17 @@
             <div class="w-8/12 p-2">
               <div
                 v-if="fileArr.length === 0"
-                class="flex items-center justify-center w-full"
+                class="flex flex-col items-center justify-center w-full"
               >
                 <label
                   for="dropzone-file"
-                  class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  class="flex flex-col items-center justify-center w-full h-96 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.files
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 >
                   <div
                     class="flex flex-col items-center justify-center pt-5 pb-6"
@@ -61,6 +67,9 @@
                     @change="handleFiles"
                   />
                 </label>
+                <span v-if="this.errors.files" class="text-red-500 text-sm">
+                  {{ this.errors.files }}
+                </span>
               </div>
               <div
                 v-else
@@ -149,8 +158,16 @@
                 <input
                   type="text"
                   v-model="this.firmName"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.firmName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span v-if="this.errors.firmName" class="text-red-500 text-sm">
+                  {{ this.errors.firmName }}
+                </span>
               </label>
               <label class="block">
                 <span class="block text-sm font-medium text-gray-700"
@@ -159,8 +176,16 @@
                 <input
                   v-model="this.modelName"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.modelName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span v-if="this.errors.modelName" class="text-red-500 text-sm">
+                  {{ this.errors.modelName }}
+                </span>
               </label>
               <label class="block">
                 <span class="block text-sm font-medium text-gray-700"
@@ -169,8 +194,19 @@
                 <input
                   v-model="this.expluatationDate"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.expluatationDate
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.expluatationDate"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.expluatationDate }}
+                </span>
               </label>
               <div>
                 <label class="block">
@@ -180,9 +216,20 @@
                   <input
                     v-model="this.serialNumber"
                     type="text"
-                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    :class="[
+                      'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                      this.errors.serialNumber
+                        ? 'border-red-500 focus:border-red-500'
+                        : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                    ]"
                   />
                 </label>
+                <span
+                  v-if="this.errors.serialNumber"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.serialNumber }}
+                </span>
               </div>
             </div>
           </div>
@@ -198,8 +245,19 @@
                 <input
                   v-model="this.clientName"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.clientName"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientName }}
+                </span>
               </label>
               <label class="block w-1/3">
                 <span class="block text-sm font-medium text-gray-700"
@@ -208,8 +266,19 @@
                 <input
                   v-model="this.clientPhone"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientPhone
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.clientPhone"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientPhone }}
+                </span>
               </label>
               <label class="block w-1/3">
                 <span class="block text-sm font-medium text-gray-700"
@@ -218,8 +287,19 @@
                 <input
                   v-model="this.clientAddress"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientAddress
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.clientAddress"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientAddress }}
+                </span>
               </label>
             </div>
             <div>
@@ -248,8 +328,19 @@
                 <input
                   v-model="this.executorName"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.executorName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.executorName"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.executorName }}
+                </span>
               </label>
               <label class="block w-1/3">
                 <span class="block text-sm font-medium text-gray-700"
@@ -258,8 +349,19 @@
                 <input
                   type="text"
                   v-model="this.executorPhone"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.executorPhone
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.executorPhone"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.executorPhone }}
+                </span>
               </label>
               <label class="block w-1/3">
                 <span class="block text-sm font-medium text-gray-700"
@@ -268,15 +370,26 @@
                 <input
                   v-model="this.serviceCenterAddress"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.serviceCenterAddress
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span
+                  v-if="this.errors.serviceCenterAddress"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.serviceCenterAddress }}
+                </span>
               </label>
             </div>
           </div>
           <div class="flex justify-end py-2">
             <button
               type="submit"
-              class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 focus:outline-none"
+              class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 focus:outline-none"
             >
               Отправить на анализ
             </button>
@@ -308,7 +421,7 @@ export default {
       fileArr: [],
 
       isServiceLoading: false,
-
+      errors: {},
       activeIndex: 0,
 
       formDates: {
@@ -326,7 +439,6 @@ export default {
   methods: {
     handleFiles(event) {
       const files = event.target.files;
-      if (!files) return;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -350,6 +462,45 @@ export default {
     },
     async handleSubmit(event) {
       event.preventDefault();
+      this.errors = {};
+      if (!this.fileArr.length) {
+        this.errors.files = "Поле обязательно для заполнения.";
+      }
+
+      if (!this.firmName) {
+        this.errors.firmName = "Поле обязательно для заполнения.";
+      }
+      if (!this.modelName) {
+        this.errors.modelName = "Поле обязательно для заполнения.";
+      }
+      if (!this.expluatationDate) {
+        this.errors.expluatationDate = "Поле обязательно для заполнения.";
+      }
+      if (!this.serialNumber) {
+        this.errors.serialNumber = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientName) {
+        this.errors.clientName = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientPhone) {
+        this.errors.clientPhone = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientAddress) {
+        this.errors.clientAddress = "Поле обязательно для заполнения.";
+      }
+      if (!this.executorName) {
+        this.errors.executorName = "Поле обязательно для заполнения.";
+      }
+      if (!this.executorPhone) {
+        this.errors.executorPhone = "Поле обязательно для заполнения.";
+      }
+      if (!this.serviceCenterAddress) {
+        this.errors.serviceCenterAddress = "Поле обязательно для заполнения.";
+      }
+
+      if (Object.keys(this.errors).length > 0) {
+        return;
+      }
       const formData = new FormData(event.target);
       this.getDate();
       formData.append("firmName", this.firmName);
@@ -369,9 +520,13 @@ export default {
         formData.append(`file${index}`, file);
       });
       try {
-        const response = await axios.post("/your-api-endpoint", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const response = await axios.post(
+          `http://${process.env.VUE_APP_IP}/history`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
         console.log("Response from server:", response.data);
       } catch (error) {
         console.error("Error sending data:", error);
@@ -395,6 +550,63 @@ export default {
       this.formDates.fileArr.splice(index, 1);
       if (index === this.activeIndex) {
         this.activeIndex = Math.max(0, index - 1);
+      }
+    },
+  },
+  watch: {
+    firmName(value) {
+      if (value) {
+        delete this.errors.firmName;
+      }
+    },
+    modelName(value) {
+      if (value) {
+        delete this.errors.modelName;
+      }
+    },
+    clientName(value) {
+      if (value) {
+        delete this.errors.clientName;
+      }
+    },
+    clientPhone(value) {
+      if (value) {
+        delete this.errors.clientPhone;
+      }
+    },
+    clientAddress(value) {
+      if (value) {
+        delete this.errors.clientAddress;
+      }
+    },
+    executorName(value) {
+      if (value) {
+        delete this.errors.executorName;
+      }
+    },
+    executorPhone(value) {
+      if (value) {
+        delete this.errors.executorPhone;
+      }
+    },
+    serviceCenterAddress(value) {
+      if (value) {
+        delete this.errors.serviceCenterAddress;
+      }
+    },
+    expluatationDate(value) {
+      if (value) {
+        delete this.errors.expluatationDate;
+      }
+    },
+    serialNumber(value) {
+      if (value) {
+        delete this.errors.serialNumber;
+      }
+    },
+    fileArr(value) {
+      if (value) {
+        delete this.errors.files;
       }
     },
   },
