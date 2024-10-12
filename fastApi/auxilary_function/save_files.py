@@ -22,12 +22,12 @@ else:
     print(f"Directory already exists: {directory_path}")
 
 
-async def save_files(files: List[UploadFile], appeal_uuid: uuid.UUID):
+async def save_files(files: List[UploadFile]):
     saved_paths = []
     for file in files:
         file_extension = file.filename.split(".")[-1]
         # Generate a unique file name using the appeal UUID and the file name
-        file_path = os.path.join(directory_path, f"{appeal_uuid}_{file.filename}")
+        file_path = os.path.join(directory_path, f"_{file.filename}")
         saved_paths.append(file_path)
         # Save file to disk
         with open(file_path, "wb") as f:

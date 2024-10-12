@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Sequence
 
 from sqlalchemy import Column, String, ForeignKey, DateTime, Text, ARRAY, Integer
 from sqlalchemy.dialects.postgresql import UUID
@@ -31,7 +32,7 @@ class Executor(Base):
 
 class Appeal(Base):
     __tablename__ = "appeals"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     order_id = Column(Integer, autoincrement=True)
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.uuid"))
     executor_id = Column(UUID(as_uuid=True), ForeignKey("executors.uuid"))
@@ -50,7 +51,7 @@ class Appeal(Base):
 class Result(Base):
     __tablename__ = "results"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    appeal_id = Column(UUID(as_uuid=True), ForeignKey("appeals.uuid"))
+    appeal_id = Column(UUID(as_uuid=True), ForeignKey("appeals.uuid"), nullable=False)  # Foreign key to appeals.uuid
     defect_photo_path = Column(String, nullable=False)
     defect_coords = Column(ARRAY(Integer), nullable=False)
     defect_class = Column(ARRAY(String))

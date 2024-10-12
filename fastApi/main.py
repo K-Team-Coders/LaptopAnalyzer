@@ -53,34 +53,32 @@ async def upload_data(
         files: List[UploadFile] = File(...),
         db: Session = Depends(get_db)
 ):
-    shared_uuid_1 = uuid.uuid4()
-
     # Create customer
     customer = Customer(
-        uuid=shared_uuid_1,
         name=clientName,
         phone_number=clientPhone,
         address=clientAddress
     )
-    shared_uuid_2 = uuid.uuid4()
+
     # Create executor
     executor = Executor(
-        uuid=shared_uuid_2,
         name=executorName,
         phone_number=executorPhone,
         address=serviceCenterAddress
     )
 
     # Save the uploaded files and get their paths
-    file_paths = await save_files(files, shared_uuid_1)
-    boxes = list()
-    classes = list()
+    file_paths = await save_files(files)  # Ensure this returns correct paths
 
+    # Call the model to process the files and get defect boxes and classes (if needed)
+    boxes = []
+    classes = []
     # for file in file_paths:
-    #     boxes.append, classes.append(model_usage(file))  # Вызов функции для использования модели машинки
-    # uuid_for_appeal = uuid.uuid4()
-    # Create appeal
+    #     box, defect_class = model_usage(file)  # Assuming this function returns the coordinates and class
+    #     boxes.append(box)
+    #     classes.append(defect_class)
 
+    # Create appeal
     appeal = Appeal(
         laptop_firm=firmName,
         laptop_model=modelName,
@@ -90,51 +88,49 @@ async def upload_data(
         customer=customer,
         executor=executor
     )
-    # Вызов функции для использования модели машинки
-    # Добавление обработки машинкой и отправка результата
 
     # Add to session and commit
     db.add(customer)
     db.add(executor)
     db.add(appeal)
+    db.commit()  # Commit to generate the UUID for appeal
+
+    # Create result after the appeal is committed
     result = Result(
         appeal_id=appeal.uuid,
         defect_photo_path=file_paths,
         defect_coords=boxes,
         defect_class=classes
     )
-
-    await db.add(result)
-
-    await db.commit()
+    db.add(result)
+    db.commit()
 
     return {"result_uuid": str(result.uuid)}
 
 
 @app.get("/result/{uuid}")
-async def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
-    # Fetch the result by UUID
-    result = await db.query(Result).filter(Result.uuid == uuid).first()
-    if not result:
-        raise HTTPException(status_code=404, detail="Result not found")
+def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
+    # Fetch the appeal by UUID
+    appeal = db.query(Appeal).filter(Appeal.uuid == uuid).first()
+    if not appeal:
+        raise HTTPException(status_code=404, detail="Appeal not found")
 
-    # Fetch the corresponding appeal by appeal_id
-    appeal = await db.query(Appeal).filter(Appeal.uuid == result.appeal_id).first()
-    if not appeal:  # <-- Исправление здесь
-        raise HTTPException(status_code=404, detail="Appeal not found for this result")
+    # Fetch the corresponding result by appeal_id
+    result = db.query(Result).filter(Result.appeal_id == appeal.uuid).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found for this appeal")
 
     # Format and return the response
     return format_appeal_response(appeal, result)
 
 
-# 2. Route to get all UUIDs from the database
 @app.get("/result/uuids/")
-async def get_all_uuids(db: Session = Depends(get_db)):
+def get_all_uuids(db: Session = Depends(get_db)):
     # Fetch all appeals and extract their UUIDs
-    results = await db.query(Result).all()
-    uuids = [str(result.uuid) for result in results]
-    orders = [str(result.order) for result in results]
-    return {"uuids": json.dumps(uuids)}
+    appeals = db.query(Appeal).all()
+    uuids = [str(appeal.uuid) for appeal in appeals]
+    order = [str(appeal.order_id) for appeal in appeals]
+    return {"uuids": json.dumps(uuids), "order": json.dumps(order)}
 
 
 if __name__ == '__main__':
