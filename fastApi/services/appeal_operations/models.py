@@ -30,14 +30,14 @@ class Executor(Base):
 
 class Appeal(Base):
     __tablename__ = "appeals"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
     order_id = Column(BigInteger, unique=True, autoincrement=True)
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.uuid"))
     executor_id = Column(UUID(as_uuid=True), ForeignKey("executors.uuid"))
     laptop_serial_number = Column(String, nullable=False)
     laptop_firm = Column(String, nullable=False)
     laptop_model = Column(String, nullable=False)
-    commission_date = Column(TIMESTAMP, nullable=False)
+    commission_date = Column(String, nullable=False)
     customer_text = Column(Text, default="")
     created_at = Column(DateTime, default=datetime.now)
 

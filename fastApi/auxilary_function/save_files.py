@@ -51,26 +51,30 @@ class TemplateData(BaseModel):
     created_at: Optional[str]
     content: Optional[str]
 
+
 class DefectClass(BaseModel):
     name: str
     coords: list
+
 
 class Image(BaseModel):
     defect_photo_path: str
     defects: List[DefectClass]
 
+
 class ImagesList(BaseModel):
     content: List[Image]
+
 
 async def save_template(template_data: TemplateData, images_list: ImagesList):
     data = {
         'appeal_order': template_data.get("appeal_order", "12345"),
         'executor_name': template_data.get("executor_name", "Иванов Иван"),
-        'executor_phone':  template_data.get("executor_phone", "8987654321"),
-        'executor_address':  template_data.get("executor_address", "ул. Ленина, д. 1"),
-        'customer_name':  template_data.get("customer_name", "Алексеев Алексей"),
-        'customer_address':  template_data.get("customer_address", "ул. Красного знамени, д. 1"),
-        'customer_phone':  template_data.get("customer_phone", "8987654321"),
+        'executor_phone': template_data.get("executor_phone", "8987654321"),
+        'executor_address': template_data.get("executor_address", "ул. Ленина, д. 1"),
+        'customer_name': template_data.get("customer_name", "Алексеев Алексей"),
+        'customer_address': template_data.get("customer_address", "ул. Красного знамени, д. 1"),
+        'customer_phone': template_data.get("customer_phone", "8987654321"),
         'laptop_firm': template_data.get("laptop_firm", "СИЛА"),
         'laptop_model': template_data.get("laptop_model", "НК2-3204"),
         'laptop_serial_number': template_data.get("laptop_serial_number", "F987654321"),
