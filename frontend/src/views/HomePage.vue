@@ -108,6 +108,7 @@
                   <div class="mt-4 mr-2">
                     <button
                       @click="openFileDialog"
+                      type="button"
                       class="w-8 h-8 bg-green-500 rounded-full"
                     >
                       <svg
@@ -423,16 +424,15 @@ import axios from "axios";
 export default {
   data() {
     return {
-      firmName: "",
-      modelName: "",
-      creationDate: "",
-      expluatationDate: "",
-      serialNumber: "",
-      clientName: "",
+      firmName: "ASUS",
+      modelName: "GERMITION",
+      expluatationDate: "23.04.2023",
+      serialNumber: "M-1284726",
+      clientName: "Иванов Д.С.",
       clientPhone: "8-888-888-88-88",
-      clientAddress: "",
-      clientDefects: "",
-      executorName: "",
+      clientAddress: "г. Москва, ул. Профсоюзная, д. 1",
+      clientDefects: "Проблемы с экраном",
+      executorName: "Сергеева А.Ю.",
       executorPhone: "8-111-111-11-11",
       serviceCenterAddress: "г. Москва, ул. Ленина, д. 1",
       fileArr: [],
@@ -520,10 +520,9 @@ export default {
         return;
       }
       const formData = new FormData(event.target);
-      this.getDate();
+
       formData.append("firmName", this.firmName);
       formData.append("modelName", this.modelName);
-      formData.append("creationDate", this.creationDate);
       formData.append("expluatationDate", this.expluatationDate);
       formData.append("serialNumber", this.serialNumber);
       formData.append("clientName", this.clientName);
@@ -534,16 +533,21 @@ export default {
       formData.append("executorPhone", this.executorPhone);
       formData.append("serviceCenterAddress", this.serviceCenterAddress);
 
-      this.formDates.fileArr.forEach((file, index) => {
-        formData.append(`file${index}`, file);
-      });
+      if (this.formDates.fileArr && this.formDates.fileArr.length) {
+        this.formDates.fileArr.forEach((file, index) => {
+          formData.append(`files`, file); // Добавление каждого файла
+        });
+      }
+      console.log("FormData:", [...formData]);
       try {
         this.isSending = true;
         const response = await axios.post(
-          `http://${process.env.VUE_APP_IP}/history`,
+          `http://${process.env.VUE_APP_IP}:8000/add_data`,
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              accept: "application/json",
+            },
           }
         );
         console.log("Response from server:", response.data);
@@ -556,13 +560,7 @@ export default {
     setActive(index) {
       this.activeIndex = index;
     },
-    getDate() {
-      const date = new Date();
-      const day = `0${date.getDate()}`.slice(-2);
-      const month = `0${date.getMonth() + 1}`.slice(-2);
-      const year = date.getFullYear();
-      this.creationDate = `${day}.${month}.${year}`;
-    },
+
     openFileDialog() {
       this.$refs.dropzoneInput.click();
     },
