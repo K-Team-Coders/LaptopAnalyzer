@@ -100,7 +100,6 @@ async def upload_data(
 
     # Create result after the appeal is committed
     result = Result(
-        appeal_id=appeal.uuid,
         defect_photo_path=file_paths,
         defect_coords=boxes,
         defect_class=classes
