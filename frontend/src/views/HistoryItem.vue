@@ -388,14 +388,17 @@ export default {
       isSaving: false,
     };
   },
-  mounted() {
+  beforeRouteUpdate(to, from, next) {
     this.isServiceLoading = true;
-    this.id = this.$route.params.id;
-    this.getHistoryItem();
+    this.id = to.params.id;
+    this.getHistoryItem().finally(() => {
+      this.isServiceLoading = false;
+    });
+    next();
   },
   methods: {
     onInput(event) {
-      let inputValue = event.target.value.replace(/\D+/g, ""); // remove non-digit characters
+      let inputValue = event.target.value.replace(/\D+/g, "");
       const formattedValue = this.formatPhoneNumber(inputValue);
       event.target.value = formattedValue;
     },
@@ -506,18 +509,18 @@ export default {
         this.isSending = false;
       }
     },
-    getHistoryItem() {
-      axios
-        .get(`http://${process.env.VUE_APP_IP}:8000/result/${this.id}`)
-        .then((response) => {
-          this.updateHistoryData(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching history item:", error);
-        })
-        .finally(() => {
-          this.isServiceLoading = false;
-        });
+    async getHistoryItem() {
+      this.isServiceLoading = true;
+      try {
+        const response = await axios.get(
+          `http://${process.env.VUE_APP_IP}:8000/result/${this.id}`
+        );
+        this.updateHistoryData(response.data);
+      } catch (error) {
+        console.error("Error fetching history item:", error);
+      } finally {
+        this.isServiceLoading = false;
+      }
     },
     updateHistoryData(data) {
       this.creationDate = data.created_at;
@@ -612,6 +615,16 @@ export default {
       if (value) {
         delete this.errors.files;
       }
+    },
+    $route: {
+      async handler(to, from) {
+        this.isServiceLoading = true;
+        this.id = to.params.id;
+        await this.getHistoryItem();
+        this.$nextTick(() => {});
+        this.isServiceLoading = false;
+      },
+      immediate: true,
     },
   },
 };
