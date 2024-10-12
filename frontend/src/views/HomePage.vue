@@ -12,6 +12,15 @@
           Идет загрузка формы...
         </p>
       </div>
+      <div
+        v-else-if="this.isSending"
+        class="h-full w-full flex flex-col justify-center items-center"
+      >
+        <span class="loader"></span>
+        <p class="text-black pt-2 font-stengazeta text-sm">
+          Происходит анализ...
+        </p>
+      </div>
       <div v-else class="h-full w-full flex flex-col">
         <form @submit.prevent="handleSubmit">
           <p class="text-2xl text-center w-full font-stengazeta px-4 py-4">
@@ -193,7 +202,7 @@
                 >
                 <input
                   v-model="this.expluatationDate"
-                  type="text"
+                  type="date"
                   :class="[
                     'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
                     this.errors.expluatationDate
@@ -265,13 +274,17 @@
                 >
                 <input
                   v-model="this.clientPhone"
-                  type="text"
+                  type="tel"
                   :class="[
                     'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
                     this.errors.clientPhone
                       ? 'border-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
                   ]"
+                  placeholder="8-xxx-xxx-xx-xx"
+                  pattern="[0-9]*"
+                  inputmode="numeric"
+                  @input="onInput($event)"
                 />
                 <span
                   v-if="this.errors.clientPhone"
@@ -347,7 +360,7 @@
                   >Номер телефона</span
                 >
                 <input
-                  type="text"
+                  type="tel"
                   v-model="this.executorPhone"
                   :class="[
                     'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
@@ -355,6 +368,10 @@
                       ? 'border-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
                   ]"
+                  placeholder="8-xxx-xxx-xx-xx"
+                  pattern="[0-9]*"
+                  inputmode="numeric"
+                  @input="onInput($event)"
                 />
                 <span
                   v-if="this.errors.executorPhone"
@@ -427,6 +444,7 @@ export default {
       formDates: {
         fileArr: [],
       },
+      isSending: false,
     };
   },
   mounted() {
@@ -520,6 +538,7 @@ export default {
         formData.append(`file${index}`, file);
       });
       try {
+        this.isSending = true;
         const response = await axios.post(
           `http://${process.env.VUE_APP_IP}/history`,
           formData,
@@ -528,8 +547,10 @@ export default {
           }
         );
         console.log("Response from server:", response.data);
+        this.isSending = false;
       } catch (error) {
         console.error("Error sending data:", error);
+        this.isSending = false;
       }
     },
     setActive(index) {
@@ -550,6 +571,32 @@ export default {
       this.formDates.fileArr.splice(index, 1);
       if (index === this.activeIndex) {
         this.activeIndex = Math.max(0, index - 1);
+      }
+    },
+    onInput(event) {
+      let inputValue = event.target.value.replace(/\D+/g, ""); // remove non-digit characters
+      const formattedValue = this.formatPhoneNumber(inputValue);
+      event.target.value = formattedValue;
+    },
+    formatPhoneNumber(phoneNumber) {
+      const parts = phoneNumber.match(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/);
+      if (parts) {
+        return `${parts[1]}-${parts[2]}-${parts[3]}-${parts[4]}-${parts[5]}`;
+      } else {
+        let formattedPhoneNumber = "";
+        for (let i = 0; i < phoneNumber.length; i++) {
+          if (i === 1) {
+            formattedPhoneNumber += "-";
+          } else if (i === 4) {
+            formattedPhoneNumber += "-";
+          } else if (i === 7) {
+            formattedPhoneNumber += "-";
+          } else if (i === 9) {
+            formattedPhoneNumber += "-";
+          }
+          formattedPhoneNumber += phoneNumber[i];
+        }
+        return formattedPhoneNumber;
       }
     },
   },
@@ -612,3 +659,24 @@ export default {
   },
 };
 </script>
+<style scoped>
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 3px solid #000000;
+  border-right: 3px solid transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
