@@ -1,9 +1,11 @@
 import uuid
-from sqlalchemy import Table, Column, String, ForeignKey, DateTime, BigInteger, TIMESTAMP, Text, ARRAY, Integer
+from datetime import datetime
+from typing import Sequence
+
+from sqlalchemy import Column, String, ForeignKey, DateTime, Text, ARRAY, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 Base = declarative_base()
 
@@ -11,7 +13,7 @@ Base = declarative_base()
 class Customer(Base):
     __tablename__ = "customers"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     address = Column(String, nullable=False)
 
@@ -21,7 +23,7 @@ class Customer(Base):
 class Executor(Base):
     __tablename__ = "executors"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     address = Column(String, nullable=False)
 
@@ -30,8 +32,8 @@ class Executor(Base):
 
 class Appeal(Base):
     __tablename__ = "appeals"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
-    order_id = Column(BigInteger, unique=True, autoincrement=True)
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    order_id = Column(Integer, autoincrement=True)
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.uuid"))
     executor_id = Column(UUID(as_uuid=True), ForeignKey("executors.uuid"))
     laptop_serial_number = Column(String, nullable=False)
@@ -49,9 +51,9 @@ class Appeal(Base):
 class Result(Base):
     __tablename__ = "results"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    appeal_id = Column(UUID(as_uuid=True), ForeignKey("appeals.uuid"))
+    appeal_id = Column(UUID(as_uuid=True), ForeignKey("appeals.uuid"), nullable=False)  # Foreign key to appeals.uuid
     defect_photo_path = Column(String, nullable=False)
     defect_coords = Column(ARRAY(Integer), nullable=False)
-    defect_class = Column(String)
+    defect_class = Column(ARRAY(String))
 
     appeal = relationship("Appeal", back_populates="results")
