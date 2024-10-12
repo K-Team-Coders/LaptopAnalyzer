@@ -13,203 +13,339 @@
         </p>
       </div>
       <div v-else class="flex flex-col">
-        <div class="text-2xl text-center w-full font-stengazeta px-4 py-4">
-          <span class="text-3xl"> Техническое заключение </span><br />от
-          <span class="text-red-500"> {{ this.creationDate }} </span>
-          № <span class="text-red-500"> {{ this.conclusionNumber }} </span>
-        </div>
-        <div class="flex w-full">
-          <div class="w-8/12 p-2">
-            <div class="flex items-center justify-center w-full">
-              <label
-                for="dropzone-file"
-                class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-              >
-                <div
-                  class="flex flex-col items-center justify-center pt-5 pb-6"
-                >
-                  <svg
-                    class="w-8 h-8 mb-4 text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                    />
-                  </svg>
-                  <p class="mb-2 text-gray-700 text-md">
-                    <span class="font-semibold">Нажмите чтобы загрузить</span>
-                    или перенесите файлы
-                  </p>
-                  <p class="text-xs text-gray-700 text-md">(PNG, JPG)</p>
-                </div>
-                <input
-                  id="dropzone-file"
-                  type="file"
-                  class="hidden"
-                  accept="image/png, image/jpeg"
-                />
-              </label>
-            </div>
+        <form @submit.prevent="handleSubmit">
+          <div class="text-2xl text-center w-full font-stengazeta px-4 py-4">
+            <span class="text-3xl"> Техническое заключение </span><br />от
+            <span class="text-red-500"> {{ this.creationDate }} </span>
+            № <span class="text-red-500"> {{ this.conclusionNumber }} </span>
           </div>
-          <div class="w-4/12 h-full p-2 flex flex-col gap-2">
-            <p class="font-bold text-xl text-center">Информация об изделии</p>
-            <label class="block">
-              <span class="block text-sm font-medium text-gray-700">Фирма</span>
-              <input
-                v-model="this.firmName"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-sm font-medium text-gray-700"
-                >Модель</span
+          <div class="flex w-full">
+            <div class="w-8/12 p-2">
+              <div
+                class="w-full relative flex flex-col border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 py-2 px-4"
               >
-              <input
-                v-model="this.modelName"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-sm font-medium text-gray-700"
-                >Дата ввода в эксплуатацию</span
-              >
-              <input
-                v-model="this.expluatationDate"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <div>
+                <div class="flex items-center justify-center w-full h-96">
+                  <div class="flex justify-center w-full">
+                    <div class="flex justify-center w-full">
+                      <img
+                        :src="fileArr[this.activeIndex]"
+                        class="w-auto h-96 rounded-lg"
+                        alt="active image"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="flex items-center space-x-2 mt-4 overflow-x-auto max-w-[40vw] mx-auto custom-scroll"
+                >
+                  <div
+                    v-for="(image, index) in fileArr"
+                    :key="index"
+                    class="w-24 h-24 border-2 rounded-md overflow-hidden cursor-pointer flex-shrink-0 relative"
+                    :class="{
+                      'border-yellow-500': index == this.activeIndex,
+                    }"
+                    @click="setActive(index)"
+                  >
+                    <img :src="image" class="w-full h-full object-cover" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-4/12 h-full p-2 flex flex-col gap-2">
+              <p class="font-bold text-xl text-center">Информация об изделии</p>
               <label class="block">
                 <span class="block text-sm font-medium text-gray-700"
-                  >Серийный номер</span
+                  >Фирма</span
                 >
                 <input
-                  v-model="this.serialNumber"
                   type="text"
-                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  v-model="this.firmName"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.firmName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
                 />
+                <span v-if="this.errors.firmName" class="text-red-500 text-sm">
+                  {{ this.errors.firmName }}
+                </span>
+              </label>
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Модель</span
+                >
+                <input
+                  v-model="this.modelName"
+                  type="text"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.modelName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span v-if="this.errors.modelName" class="text-red-500 text-sm">
+                  {{ this.errors.modelName }}
+                </span>
+              </label>
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Дата ввода в эксплуатацию</span
+                >
+                <input
+                  v-model="this.expluatationDate"
+                  type="date"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.expluatationDate
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span
+                  v-if="this.errors.expluatationDate"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.expluatationDate }}
+                </span>
+              </label>
+              <div>
+                <label class="block">
+                  <span class="block text-sm font-medium text-gray-700"
+                    >Серийный номер</span
+                  >
+                  <input
+                    v-model="this.serialNumber"
+                    type="text"
+                    :class="[
+                      'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                      this.errors.serialNumber
+                        ? 'border-red-500 focus:border-red-500'
+                        : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                    ]"
+                  />
+                </label>
+                <span
+                  v-if="this.errors.serialNumber"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.serialNumber }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="w-full">
+            <div>
+              <p class="font-bold text-xl px-2 pt-2">Информация об заявителе</p>
+            </div>
+            <div class="w-full p-2 flex gap-4">
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >ФИО заявителя</span
+                >
+                <input
+                  v-model="this.clientName"
+                  type="text"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span
+                  v-if="this.errors.clientName"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientName }}
+                </span>
+              </label>
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Номер телефона</span
+                >
+                <input
+                  v-model="this.clientPhone"
+                  type="tel"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientPhone
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                  placeholder="8-xxx-xxx-xx-xx"
+                  pattern="[8]-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                  inputmode="numeric"
+                  @input="onInput($event)"
+                />
+                <span
+                  v-if="this.errors.clientPhone"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientPhone }}
+                </span>
+              </label>
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Адрес</span
+                >
+                <input
+                  v-model="this.clientAddress"
+                  type="text"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.clientAddress
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span
+                  v-if="this.errors.clientAddress"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.clientAddress }}
+                </span>
+              </label>
+            </div>
+            <div>
+              <label class="block w-full px-2 pt-1">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Указанные неисправности (со слов заявителя)</span
+                >
+                <textarea
+                  v-model="this.clientDefects"
+                  type="text"
+                  class="mt-1 block w-full min-h-28 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                ></textarea>
               </label>
             </div>
           </div>
-        </div>
-        <div class="w-full">
-          <div>
-            <p class="font-bold text-xl px-2 pt-2">Информация об заявителе</p>
+          <div class="w-full pt-2">
+            <div>
+              <p class="font-bold text-xl px-2 pt-2">
+                Информация об исполнителе
+              </p>
+            </div>
+            <div class="w-full p-2 flex gap-4">
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >ФИО исполнителя</span
+                >
+                <input
+                  v-model="this.executorName"
+                  type="text"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.executorName
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span
+                  v-if="this.errors.executorName"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.executorName }}
+                </span>
+              </label>
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Номер телефона</span
+                >
+                <input
+                  type="tel"
+                  v-model="this.executorPhone"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.executorPhone
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                  placeholder="8-xxx-xxx-xx-xx"
+                  inputmode="numeric"
+                  pattern="[8]-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                  @input="onInput($event)"
+                />
+                <span
+                  v-if="this.errors.executorPhone"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.executorPhone }}
+                </span>
+              </label>
+              <label class="block w-1/3">
+                <span class="block text-sm font-medium text-gray-700"
+                  >Адрес сервисного центра</span
+                >
+                <input
+                  v-model="this.serviceCenterAddress"
+                  type="text"
+                  :class="[
+                    'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                    this.errors.serviceCenterAddress
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+                  ]"
+                />
+                <span
+                  v-if="this.errors.serviceCenterAddress"
+                  class="text-red-500 text-sm"
+                >
+                  {{ this.errors.serviceCenterAddress }}
+                </span>
+              </label>
+            </div>
           </div>
-          <div class="w-full p-2 flex gap-4">
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700"
-                >ФИО заявителя</span
-              >
-              <input
-                v-model="this.clientName"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700"
-                >Номер телефона</span
-              >
-              <input
-                v-model="this.clientPhone"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700">Адрес</span>
-              <input
-                v-model="this.clientAddress"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-          </div>
-          <div>
-            <label class="block w-full px-2 pt-1">
-              <span class="block text-sm font-medium text-gray-700"
-                >Указанные неисправности (со слов заявителя)</span
-              >
-              <textarea
-                v-model="this.clientDefects"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              ></textarea>
-            </label>
-          </div>
-        </div>
-        <div class="w-full pt-2">
-          <div>
-            <p class="font-bold text-xl px-2 pt-2">Информация об исполнителе</p>
-          </div>
-          <div class="w-full p-2 flex gap-4">
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700"
-                >ФИО исполнителя</span
-              >
-              <input
-                v-model="this.executorName"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700"
-                >Номер телефона</span
-              >
-              <input
-                v-model="this.executorPhone"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-            <label class="block w-1/3">
-              <span class="block text-sm font-medium text-gray-700"
-                >Адрес сервисного центра</span
-              >
-              <input
-                v-model="this.serviceCenterAddress"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </label>
-          </div>
-        </div>
 
-        <div class="p-2">
-          <h3 class="text-lg font-medium text-gray-900">
-            Техническое заключение
-          </h3>
-          <textarea
-            v-model="this.conclusionText"
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm min-h-32"
-          >
-          </textarea>
-        </div>
-        <div class="flex justify-end py-2">
-          <button
-            type="button"
-            class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 focus:outline-none"
-          >
-            Сохранить изменения
-          </button>
-        </div>
+          <div class="px-2 pt-2">
+            <h3 class="text-lg font-medium text-gray-900">
+              Техническое заключение
+            </h3>
+            <textarea
+              v-model="this.conclusionText"
+              :class="[
+                'mt-1 block w-full px-3 py-2 h-32 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
+                this.errors.conclusionText
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
+              ]"
+            >
+            </textarea>
+            <span
+              v-if="this.errors.conclusionText"
+              class="text-red-500 text-sm"
+            >
+              {{ this.errors.conclusionText }}
+            </span>
+          </div>
+          <div class="px-4">
+            <span
+              class="text-blue-700 text-sm hover:underline hover:text-blue-800 cursor-pointer"
+              @click="
+                downloadFile(this.id, this.creationDate, this.conclusionNumber)
+              "
+            >
+              Скачать заключение в формате PDF
+            </span>
+          </div>
+          <div class="flex justify-end py-2">
+            <button
+              type="submit"
+              class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 focus:outline-none"
+            >
+              Сохранить изменения
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -231,6 +367,14 @@ export default {
       fileArr: [],
 
       isServiceLoading: false,
+
+      errors: {},
+      activeIndex: 0,
+
+      formDates: {
+        fileArr: [],
+      },
+      isSaving: false,
     };
   },
   mounted() {
@@ -238,6 +382,212 @@ export default {
     setTimeout(() => {
       this.isServiceLoading = false;
     }, 1000);
+    this.id = this.$route.params.id;
+    this.getHistoryItem();
+  },
+  methods: {
+    onInput(event) {
+      let inputValue = event.target.value.replace(/\D+/g, ""); // remove non-digit characters
+      const formattedValue = this.formatPhoneNumber(inputValue);
+      event.target.value = formattedValue;
+    },
+    formatPhoneNumber(phoneNumber) {
+      const parts = phoneNumber.match(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/);
+      if (parts) {
+        return `${parts[1]}-${parts[2]}-${parts[3]}-${parts[4]}-${parts[5]}`;
+      } else {
+        let formattedPhoneNumber = "";
+        for (let i = 0; i < phoneNumber.length; i++) {
+          if (i === 1) {
+            formattedPhoneNumber += "-";
+          } else if (i === 4) {
+            formattedPhoneNumber += "-";
+          } else if (i === 7) {
+            formattedPhoneNumber += "-";
+          } else if (i === 9) {
+            formattedPhoneNumber += "-";
+          }
+          formattedPhoneNumber += phoneNumber[i];
+        }
+        return formattedPhoneNumber;
+      }
+    },
+    setActive(index) {
+      this.activeIndex = index;
+    },
+    async handleSubmit(event) {
+      event.preventDefault();
+      this.errors = {};
+
+      if (!this.firmName) {
+        this.errors.firmName = "Поле обязательно для заполнения.";
+      }
+      if (!this.modelName) {
+        this.errors.modelName = "Поле обязательно для заполнения.";
+      }
+      if (!this.expluatationDate) {
+        this.errors.expluatationDate = "Поле обязательно для заполнения.";
+      }
+      if (!this.serialNumber) {
+        this.errors.serialNumber = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientName) {
+        this.errors.clientName = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientPhone) {
+        this.errors.clientPhone = "Поле обязательно для заполнения.";
+      }
+      if (!this.clientAddress) {
+        this.errors.clientAddress = "Поле обязательно для заполнения.";
+      }
+      if (!this.executorName) {
+        this.errors.executorName = "Поле обязательно для заполнения.";
+      }
+      if (!this.executorPhone) {
+        this.errors.executorPhone = "Поле обязательно для заполнения.";
+      }
+      if (!this.serviceCenterAddress) {
+        this.errors.serviceCenterAddress = "Поле обязательно для заполнения.";
+      }
+      if (!this.conclusionText) {
+        this.errors.conclusionText = "Поле обязательно для заполнения.";
+      }
+
+      if (Object.keys(this.errors).length > 0) {
+        return;
+      }
+      const formData = new FormData(event.target);
+      this.getDate();
+      formData.append("firmName", this.firmName);
+      formData.append("modelName", this.modelName);
+      formData.append("creationDate", this.creationDate);
+      formData.append("expluatationDate", this.expluatationDate);
+      formData.append("serialNumber", this.serialNumber);
+      formData.append("clientName", this.clientName);
+      formData.append("clientPhone", this.clientPhone);
+      formData.append("clientAddress", this.clientAddress);
+      formData.append("clientDefects", this.clientDefects);
+      formData.append("executorName", this.executorName);
+      formData.append("executorPhone", this.executorPhone);
+      formData.append("serviceCenterAddress", this.serviceCenterAddress);
+      formData.append("conclusionText", this.conclusionText);
+
+      this.formDates.fileArr.forEach((file, index) => {
+        formData.append(`file${index}`, file);
+      });
+      try {
+        this.isSending = true;
+        const response = await axios.post(
+          `http://${process.env.VUE_APP_IP}/history`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        console.log("Response from server:", response.data);
+        this.isSending = false;
+      } catch (error) {
+        console.error("Error sending data:", error);
+        this.isSending = false;
+      }
+    },
+    getHistoryItem() {
+      axios
+        .get(
+          `http://${process.env.VUE_APP_IP}/statement/${this.$route.params.id}`
+        )
+        .then((response) => {
+          this.firmName = response.data.firmName || "1";
+          this.modelName = response.data.modelName || "2";
+          this.creationDate = response.data.creationDate || "3";
+          this.expluatationDate = response.data.expluatationDate || "4";
+          this.serialNumber = response.data.serialNumber || "5";
+          this.clientName = response.data.clientName || "6";
+          this.clientPhone = response.data.clientPhone || "7";
+          this.clientAddress = response.data.clientAddress || "8";
+          this.clientDefects = response.data.clientDefects || "9";
+          this.executorName = response.data.executorName || "10";
+          this.executorPhone = response.data.executorPhone || "11";
+          this.serviceCenterAddress =
+            response.data.serviceCenterAddress || "12";
+          this.conclusionText = response.data.conclusionText || "13";
+        })
+        .catch((error) => {
+          console.error("Error fetching history item:", error);
+        });
+    },
+    downloadFile(id, date, name) {
+      axios
+        .get(`http://${process.env.VUE_APP_IP}/download/${id}`)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", `Заключение от ${date} № ${name}.pdf`);
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Error downloading file:", error);
+        });
+    },
+  },
+  watch: {
+    firmName(value) {
+      if (value) {
+        delete this.errors.firmName;
+      }
+    },
+    modelName(value) {
+      if (value) {
+        delete this.errors.modelName;
+      }
+    },
+    clientName(value) {
+      if (value) {
+        delete this.errors.clientName;
+      }
+    },
+    clientPhone(value) {
+      if (value) {
+        delete this.errors.clientPhone;
+      }
+    },
+    clientAddress(value) {
+      if (value) {
+        delete this.errors.clientAddress;
+      }
+    },
+    executorName(value) {
+      if (value) {
+        delete this.errors.executorName;
+      }
+    },
+    executorPhone(value) {
+      if (value) {
+        delete this.errors.executorPhone;
+      }
+    },
+    serviceCenterAddress(value) {
+      if (value) {
+        delete this.errors.serviceCenterAddress;
+      }
+    },
+    expluatationDate(value) {
+      if (value) {
+        delete this.errors.expluatationDate;
+      }
+    },
+    serialNumber(value) {
+      if (value) {
+        delete this.errors.serialNumber;
+      }
+    },
+    fileArr(value) {
+      if (value) {
+        delete this.errors.files;
+      }
+    },
   },
 };
 </script>

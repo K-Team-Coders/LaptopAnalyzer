@@ -39,7 +39,7 @@
           </p>
           <router-link
             v-for="setting in statementNumber"
-            :key="setting.name"
+            :key="setting.category"
             :to="setting.route"
           >
             <SidebarCategory
@@ -101,6 +101,18 @@ export default {
         isActive:
           this.$route && this.$route.path === `/statement/${statement.id}`,
       }));
+    },
+  },
+  methods: {
+    getLastStatements() {
+      axios
+        .get(`http://${process.env.VUE_APP_IP}/statement`)
+        .then((response) => {
+          this.statements = response.data;
+        })
+        .catch((error) => {
+          console.error("Error fetching statements:", error);
+        });
     },
   },
 };
