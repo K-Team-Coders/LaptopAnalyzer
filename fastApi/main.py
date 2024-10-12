@@ -1,3 +1,4 @@
+import uuid
 from contextlib import asynccontextmanager
 from typing import List
 
@@ -74,23 +75,21 @@ async def upload_data(
     boxes = list()
     classes = list()
 
-    for file in file_paths:
-        boxes.append, classes.append(model_usage(file))  # Вызов функции для использования модели машинки
-    uuid_for_appeal = uuid.uuid4()
+    # for file in file_paths:
+    #     boxes.append, classes.append(model_usage(file))  # Вызов функции для использования модели машинки
+    # uuid_for_appeal = uuid.uuid4()
     # Create appeal
 
     appeal = Appeal(
-        uuid=uuid_for_appeal,
         laptop_firm=firmName,
         laptop_model=modelName,
         commission_date=expluatationDate,
         laptop_serial_number=serialNumber,
         customer_text=clientDefects,
         customer=customer,
-        executor=executor,
-        file_paths=file_paths
+        executor=executor
     )
-    boxes, classes = model_usage()  # Вызов функции для использования модели машинки
+    # Вызов функции для использования модели машинки
     # Добавление обработки машинкой и отправка результата
 
     # Add to session and commit
@@ -99,7 +98,7 @@ async def upload_data(
     db.add(appeal)
     result = Result(
         uuid=uuid.uuid4(),
-        appeal_id=uuid_for_appeal,
+        appeal_id=appeal.uuid,
         defect_photo_path=file_paths,
         defect_coords=boxes,
         defect_class=classes
@@ -107,33 +106,33 @@ async def upload_data(
 
     db.add(result)
 
-    await db.commit()
+    db.commit()
 
     return {"result_uuid": str(result.uuid)}
 
 
-@app.get("/appeal/{uuid}")
-def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
-    # Fetch the appeal by UUID
-    appeal = db.query(Appeal).filter(Appeal.uuid == uuid).first()
-    if not appeal:
-        raise HTTPException(status_code=404, detail="Appeal not found")
-
-    # Fetch the corresponding result by appeal_id
-    result = db.query(Result).filter(Result.appeal_id == appeal.uuid).first()
+@app.get("/result/{uuid}")
+async def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
+    # Fetch the result by UUID
+    result = db.query(Result).filter(Result.uuid == uuid).first()
     if not result:
-        raise HTTPException(status_code=404, detail="Result not found for this appeal")
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    # Fetch the corresponding appeal by appeal_id
+    appeal = db.query(Appeal).filter(Appeal.uuid == result.appeal_id).first()
+    if not appeal:  # <-- Исправление здесь
+        raise HTTPException(status_code=404, detail="Appeal not found for this result")
 
     # Format and return the response
     return format_appeal_response(appeal, result)
 
 
 # 2. Route to get all UUIDs from the database
-@app.get("/appeals/uuids/")
-def get_all_uuids(db: Session = Depends(get_db)):
+@app.get("/result/uuids/")
+async def get_all_uuids(db: Session = Depends(get_db)):
     # Fetch all appeals and extract their UUIDs
-    appeals = db.query(Appeal).all()
-    uuids = [str(appeal.uuid) for appeal in appeals]
+    results = db.query(Result).all()
+    uuids = [str(result.uuid) for result in results]
 
     return {"uuids": uuids}
 
