@@ -104,9 +104,9 @@ async def upload_data(
         defect_class=classes
     )
 
-    db.add(result)
+    await db.add(result)
 
-    db.commit()
+    await db.commit()
 
     return {"result_uuid": str(result.uuid)}
 
@@ -114,12 +114,12 @@ async def upload_data(
 @app.get("/result/{uuid}")
 async def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
     # Fetch the result by UUID
-    result = db.query(Result).filter(Result.uuid == uuid).first()
+    result = await db.query(Result).filter(Result.uuid == uuid).first()
     if not result:
         raise HTTPException(status_code=404, detail="Result not found")
 
     # Fetch the corresponding appeal by appeal_id
-    appeal = db.query(Appeal).filter(Appeal.uuid == result.appeal_id).first()
+    appeal = await db.query(Appeal).filter(Appeal.uuid == result.appeal_id).first()
     if not appeal:  # <-- Исправление здесь
         raise HTTPException(status_code=404, detail="Appeal not found for this result")
 
@@ -131,7 +131,7 @@ async def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
 @app.get("/result/uuids/")
 async def get_all_uuids(db: Session = Depends(get_db)):
     # Fetch all appeals and extract their UUIDs
-    results = db.query(Result).all()
+    results = await db.query(Result).all()
     uuids = [str(result.uuid) for result in results]
 
     return {"uuids": uuids}
