@@ -43,7 +43,7 @@
             <SidebarCategory
               :category="setting.order"
               name="history"
-              :classed="setting.classed"
+              classed="w-8 h-8 ml-1"
               :isActive="isActive || isExactActive"
               @click.native="navigate"
             />
