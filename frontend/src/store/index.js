@@ -51,7 +51,7 @@ export default createStore({
     },
     fetchStatements({ commit }) {
       axios
-        .get(`http://${process.env.VUE_APP_IP}:8000/result/uuids`, {})
+        .get(`http://${process.env.VUE_APP_IP}:8000/result/uuids/`)
         .then((response) => {
           commit("setStatements", response.data);
           console.log("Statements fetched:", response.data);
