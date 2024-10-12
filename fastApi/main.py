@@ -1,3 +1,4 @@
+import json
 import uuid
 from contextlib import asynccontextmanager
 from typing import List
@@ -52,26 +53,26 @@ async def upload_data(
         files: List[UploadFile] = File(...),
         db: Session = Depends(get_db)
 ):
-    shared_uuid = uuid.uuid4()
+    shared_uuid_1 = uuid.uuid4()
 
     # Create customer
     customer = Customer(
-        uuid=shared_uuid,
+        uuid=shared_uuid_1,
         name=clientName,
         phone_number=clientPhone,
         address=clientAddress
     )
-
+    shared_uuid_2 = uuid.uuid4()
     # Create executor
     executor = Executor(
-        uuid=shared_uuid,
+        uuid=shared_uuid_2,
         name=executorName,
         phone_number=executorPhone,
         address=serviceCenterAddress
     )
 
     # Save the uploaded files and get their paths
-    file_paths = await save_files(files, shared_uuid)
+    file_paths = await save_files(files, shared_uuid_1)
     boxes = list()
     classes = list()
 
@@ -97,7 +98,6 @@ async def upload_data(
     db.add(executor)
     db.add(appeal)
     result = Result(
-        uuid=uuid.uuid4(),
         appeal_id=appeal.uuid,
         defect_photo_path=file_paths,
         defect_coords=boxes,
@@ -120,7 +120,7 @@ async def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
 
     # Fetch the corresponding appeal by appeal_id
     appeal = db.query(Appeal).filter(Appeal.uuid == result.appeal_id).first()
-    if not appeal:  # <-- Исправление здесь
+    if not appeal:
         raise HTTPException(status_code=404, detail="Appeal not found for this result")
 
     # Format and return the response
@@ -133,8 +133,8 @@ async def get_all_uuids(db: Session = Depends(get_db)):
     # Fetch all appeals and extract their UUIDs
     results = db.query(Result).all()
     uuids = [str(result.uuid) for result in results]
-
-    return {"uuids": uuids}
+    orders = [str(result.order) for result in results]
+    return {"uuids": json.dumps(uuids)}
 
 
 if __name__ == '__main__':
