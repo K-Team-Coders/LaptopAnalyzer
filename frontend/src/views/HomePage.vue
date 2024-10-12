@@ -282,7 +282,7 @@
                       : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
                   ]"
                   placeholder="8-xxx-xxx-xx-xx"
-                  pattern="[0-9]*"
+                  pattern="[8]-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
                   inputmode="numeric"
                   @input="onInput($event)"
                 />
@@ -369,8 +369,8 @@
                       : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500',
                   ]"
                   placeholder="8-xxx-xxx-xx-xx"
-                  pattern="[0-9]*"
                   inputmode="numeric"
+                  pattern="[8]-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
                   @input="onInput($event)"
                 />
                 <span
