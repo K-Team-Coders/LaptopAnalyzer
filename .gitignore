@@ -127,3 +127,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 fastApi/.env
+fastApi/services/appeal_operations/utils/document_forming/~WRL0621.tmp
+fastApi/services/appeal_operations/utils/document_forming/~$mplate.docx
+fastApi/services/appeal_operations/utils/document_forming/№000001_от_24.03.2024.docx
+fastApi/services/appeal_operations/utils/document_forming/~$mplate.docx
