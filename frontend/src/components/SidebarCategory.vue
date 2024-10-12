@@ -1,6 +1,6 @@
 <template>
   <a
-    class="flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300 duration-100"
+    class="flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300 duration-100 cursor-pointer"
     :class="{
       'bg-gray-300': isActive,
     }"

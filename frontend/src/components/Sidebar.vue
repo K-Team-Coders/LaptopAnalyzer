@@ -6,12 +6,8 @@
       <div class="flex justify-center items-center w-full px-3 mt-4">
         <img class="w-12 h-12" src="@/img/logo.png" />
         <div class="flex flex-col justify-start mt-4 ml-2 text-[black]">
-          <p class="text-5xl leading-[0.5] font-stengazeta">
-            Магистр
-          </p>
-          <p class="text-[11px] font-stengazeta">
-            интеллектуальный помощник
-          </p>
+          <p class="text-5xl leading-[0.5] font-stengazeta">Магистр</p>
+          <p class="text-[11px] font-stengazeta">интеллектуальный помощник</p>
         </div>
       </div>
       <div class="w-full px-2">
@@ -41,12 +37,15 @@
             v-for="setting in statementNumber"
             :key="setting.category"
             :to="setting.route"
+            custom
+            v-slot="{ navigate, isActive, isExactActive }"
           >
             <SidebarCategory
               :category="setting.category"
-              :name="setting.name"
+              name="history"
               :classed="setting.classed"
-              :isActive="setting.isActive"
+              :isActive="isActive || isExactActive"
+              @click.native="navigate"
             />
           </router-link>
         </div>
@@ -56,15 +55,14 @@
 </template>
 <script>
 import SidebarCategory from "./SidebarCategory.vue";
+import { mapGetters } from "vuex";
 export default {
   components: {
     SidebarCategory,
   },
   data() {
     return {
-      statements: [
-        { id: 1, category: "Заключение № 0000001", name: "history" },
-      ],
+      statements: [],
     };
   },
   computed: {
@@ -93,15 +91,7 @@ export default {
         },
       ];
     },
-    statementNumber() {
-      return this.statements.slice(0, 7).map((statement) => ({
-        ...statement,
-        classed: "w-8 h-8 ml-1",
-        route: `/statement/${statement.id}`,
-        isActive:
-          this.$route && this.$route.path === `/statement/${statement.id}`,
-      }));
-    },
+    ...mapGetters(["statementNumber"]),
   },
   methods: {
     getLastStatements() {
@@ -114,6 +104,9 @@ export default {
           console.error("Error fetching statements:", error);
         });
     },
+  },
+  created() {
+    this.$store.dispatch("fetchStatements");
   },
 };
 </script>

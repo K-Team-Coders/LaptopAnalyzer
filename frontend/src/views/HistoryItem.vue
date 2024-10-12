@@ -350,8 +350,8 @@ export default {
   data() {
     return {
       id: null,
-      creationDate: "11.10.2024",
-      conclusionNumber: "0000001",
+      creationDate: "",
+      conclusionNumber: "",
       firmName: "",
       modelName: "",
       expluatationDate: "",
@@ -379,9 +379,6 @@ export default {
   },
   mounted() {
     this.isServiceLoading = true;
-    setTimeout(() => {
-      this.isServiceLoading = false;
-    }, 1000);
     this.id = this.$route.params.id;
     this.getHistoryItem();
   },
@@ -493,28 +490,33 @@ export default {
     },
     getHistoryItem() {
       axios
-        .get(
-          `http://${process.env.VUE_APP_IP}/statement/${this.$route.params.id}`
-        )
+        .get(`http://${process.env.VUE_APP_IP}/statement/${this.id}`)
         .then((response) => {
-          this.firmName = response.data.firmName || "1";
-          this.modelName = response.data.modelName || "2";
-          this.creationDate = response.data.creationDate || "3";
-          this.expluatationDate = response.data.expluatationDate || "4";
-          this.serialNumber = response.data.serialNumber || "5";
-          this.clientName = response.data.clientName || "6";
-          this.clientPhone = response.data.clientPhone || "7";
-          this.clientAddress = response.data.clientAddress || "8";
-          this.clientDefects = response.data.clientDefects || "9";
-          this.executorName = response.data.executorName || "10";
-          this.executorPhone = response.data.executorPhone || "11";
-          this.serviceCenterAddress =
-            response.data.serviceCenterAddress || "12";
-          this.conclusionText = response.data.conclusionText || "13";
+          this.updateHistoryData(response.data);
         })
         .catch((error) => {
           console.error("Error fetching history item:", error);
+        })
+        .finally(() => {
+          this.isServiceLoading = false;
         });
+    },
+    updateHistoryData(data) {
+      this.firmName = data.firmName || "Default Firm Name";
+      this.modelName = data.modelName || "Default Model Name";
+      this.creationDate = data.creationDate || "Default Creation Date";
+      this.expluatationDate =
+        data.expluatationDate || "Default Exploitation Date";
+      this.serialNumber = data.serialNumber || "Default Serial Number";
+      this.clientName = data.clientName || "Default Client Name";
+      this.clientPhone = data.clientPhone || "Default Client Phone";
+      this.clientAddress = data.clientAddress || "Default Client Address";
+      this.clientDefects = data.clientDefects || "Default Client Defects";
+      this.executorName = data.executorName || "Default Executor Name";
+      this.executorPhone = data.executorPhone || "Default Executor Phone";
+      this.serviceCenterAddress =
+        data.serviceCenterAddress || "Default Service Center Address";
+      this.conclusionText = data.conclusionText || "Default Conclusion Text";
     },
     downloadFile(id, date, name) {
       axios
