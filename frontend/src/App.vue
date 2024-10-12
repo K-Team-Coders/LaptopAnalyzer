@@ -35,7 +35,7 @@ export default {
     ...mapActions(["fetchStatements"]),
   },
   mounted() {
-    // this.fetchStatements();
+    this.fetchStatements();
   },
 };
 </script>

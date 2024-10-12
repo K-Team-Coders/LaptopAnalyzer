@@ -24,15 +24,23 @@
               <div
                 class="w-full relative flex flex-col border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 py-2 px-4"
               >
-                <div class="flex items-center justify-center w-full h-96">
+                <div
+                  class="flex items-center justify-center w-full h-96 relative"
+                >
                   <div class="flex justify-center w-full">
-                    <div class="flex justify-center w-full">
-                      <img
-                        :src="fileArr[this.activeIndex]"
-                        class="w-auto h-96 rounded-lg"
-                        alt="active image"
-                      />
-                    </div>
+                    <img
+                      :src="fileArr[activeIndex]?.defect_photo_path"
+                      class="w-auto h-96 rounded-lg"
+                      alt="active image"
+                    />
+                    <Rectangle
+                      v-for="(defect, index) in fileArr[activeIndex]?.defects ||
+                      []"
+                      :key="index"
+                      :coords="defect.coords"
+                      :name="defect.name"
+                      @update-defect="updateDefect(activeIndex, index, $event)"
+                    />
                   </div>
                 </div>
 
@@ -48,7 +56,10 @@
                     }"
                     @click="setActive(index)"
                   >
-                    <img :src="image" class="w-full h-full object-cover" />
+                    <img
+                      :src="image.defect_photo_path"
+                      class="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -349,7 +360,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      id: null,
+      id: "",
       creationDate: "",
       conclusionNumber: "",
       firmName: "",
@@ -411,6 +422,13 @@ export default {
     },
     setActive(index) {
       this.activeIndex = index;
+    },
+    updateDefect(imageIndex, defectIndex, updatedDefect) {
+      this.fileArr[imageIndex].defects[defectIndex] = updatedDefect;
+    },
+    onInput(event) {
+      const value = event.target.value.replace(/[^\d-]/g, "");
+      event.target.value = value;
     },
     async handleSubmit(event) {
       event.preventDefault();
@@ -490,7 +508,7 @@ export default {
     },
     getHistoryItem() {
       axios
-        .get(`http://${process.env.VUE_APP_IP}/statement/${this.id}`)
+        .get(`http://${process.env.VUE_APP_IP}/result/${this.id}`)
         .then((response) => {
           this.updateHistoryData(response.data);
         })
@@ -502,21 +520,26 @@ export default {
         });
     },
     updateHistoryData(data) {
-      this.firmName = data.firmName || "Default Firm Name";
-      this.modelName = data.modelName || "Default Model Name";
-      this.creationDate = data.creationDate || "Default Creation Date";
-      this.expluatationDate =
-        data.expluatationDate || "Default Exploitation Date";
-      this.serialNumber = data.serialNumber || "Default Serial Number";
-      this.clientName = data.clientName || "Default Client Name";
-      this.clientPhone = data.clientPhone || "Default Client Phone";
-      this.clientAddress = data.clientAddress || "Default Client Address";
-      this.clientDefects = data.clientDefects || "Default Client Defects";
-      this.executorName = data.executorName || "Default Executor Name";
-      this.executorPhone = data.executorPhone || "Default Executor Phone";
-      this.serviceCenterAddress =
-        data.serviceCenterAddress || "Default Service Center Address";
-      this.conclusionText = data.conclusionText || "Default Conclusion Text";
+      this.creationDate = data.created_at;
+      this.conclusionNumber = data.appeal_order;
+      this.firmName = data.laptop_firm;
+      this.modelName = data.laptop_model;
+      this.expluatationDate = data.commission_date;
+      this.serialNumber = data.laptop_serial_number;
+      this.clientName = data.customer_name;
+      this.clientPhone = data.customer_phone;
+      this.clientAddress = data.customer_address;
+      this.executorName = data.executor_name;
+      this.executorPhone = data.executor_phone;
+      this.serviceCenterAddress = data.executor_address;
+
+      this.fileArr = data.content.map((item) => ({
+        defect_photo_path: item.defect_photo_path,
+        defects: item.defects.map((defect) => ({
+          name: defect.name || defect.class || "Unknown",
+          coords: defect.coords,
+        })),
+      }));
     },
     downloadFile(id, date, name) {
       axios

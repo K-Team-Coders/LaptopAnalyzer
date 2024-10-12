@@ -6,24 +6,29 @@ export default createStore({
       localStorage.getItem("isOpenSidebar") !== null
         ? localStorage.getItem("isOpenSidebar") === "true"
         : true,
-    statements: [
-      {
-        uuids: [
-          "37d8b213-aedb-4830-9689-b441d752b514",
-          "37d8b213-aedb-4830-9689-b441d752b545",
-          "37d8b213-aedb-4830-9689-b441d752b421",
-        ],
-      },
-    ],
+    statements: [],
   },
   getters: {
     isOpenSidebar: (state) => state.isOpenSidebar,
     statementNumber: (state) => {
-      const allUuids = state.statements.flatMap((statement) => statement.uuids);
+      const uuidToOrderMap = {};
+      state.statements.forEach((statement) => {
+        const uuids = JSON.parse(statement.uuids);
+        const orders = JSON.parse(statement.order);
+        uuids.forEach((uuid, index) => {
+          uuidToOrderMap[uuid] = orders[index];
+        });
+      });
+
+      const allUuids = state.statements.flatMap((statement) =>
+        JSON.parse(statement.uuids)
+      );
       const recentUuids = allUuids.slice(-7);
+
       return recentUuids
         .map((uuid) => ({
           uuid,
+          order: uuidToOrderMap[uuid] || "Unknown",
           classed: "w-8 h-8 ml-1",
           route: `/statement/${uuid}`,
         }))

@@ -41,7 +41,7 @@
             v-slot="{ navigate, isActive, isExactActive }"
           >
             <SidebarCategory
-              :category="setting.uuid"
+              :category="setting.order"
               name="history"
               :classed="setting.classed"
               :isActive="isActive || isExactActive"
