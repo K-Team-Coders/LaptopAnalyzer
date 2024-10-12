@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Sequence
-
+import random
 from sqlalchemy import Column, String, ForeignKey, DateTime, Text, ARRAY, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
@@ -33,7 +32,7 @@ class Executor(Base):
 class Appeal(Base):
     __tablename__ = "appeals"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    order_id = Column(Integer, autoincrement=True)
+    order_id = Column(Integer, random.randint(0, 999999))
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.uuid"))
     executor_id = Column(UUID(as_uuid=True), ForeignKey("executors.uuid"))
     laptop_serial_number = Column(String, nullable=False)

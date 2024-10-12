@@ -493,7 +493,7 @@ export default {
       try {
         this.isSending = true;
         const response = await axios.post(
-          `http://${process.env.VUE_APP_IP}history`,
+          `http://${process.env.VUE_APP_IP}:8000/history`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },

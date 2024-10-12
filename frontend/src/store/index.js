@@ -11,28 +11,15 @@ export default createStore({
   getters: {
     isOpenSidebar: (state) => state.isOpenSidebar,
     statementNumber: (state) => {
-      const uuidToOrderMap = {};
-      state.statements.forEach((statement) => {
-        const uuids = JSON.parse(statement.uuids);
-        const orders = JSON.parse(statement.order);
-        uuids.forEach((uuid, index) => {
-          uuidToOrderMap[uuid] = orders[index];
-        });
-      });
+      const statements = state.statements[0] || { uuids: [], order: [] };
+      const showLast = 6;
+      const start = Math.max(statements.uuids.length - showLast, 0);
 
-      const allUuids = state.statements.flatMap((statement) =>
-        JSON.parse(statement.uuids)
-      );
-      const recentUuids = allUuids.slice(-7);
-
-      return recentUuids
-        .map((uuid) => ({
-          uuid,
-          order: uuidToOrderMap[uuid] || "Unknown",
-          classed: "w-8 h-8 ml-1",
-          route: `/statement/${uuid}`,
-        }))
-        .reverse();
+      return statements.uuids.slice(start).map((uuid, index) => ({
+        uuid: uuid,
+        order: statements.order[start + index],
+        route: `/statement/${uuid}`,
+      }));
     },
     allStatements: (state) => state.statements,
   },
@@ -49,12 +36,19 @@ export default createStore({
     toggleSidebar({ commit }) {
       commit("toggleSidebar");
     },
+
     fetchStatements({ commit }) {
       axios
         .get(`http://${process.env.VUE_APP_IP}:8000/result/uuids/`)
         .then((response) => {
-          commit("setStatements", response.data);
-          console.log("Statements fetched:", response.data);
+          let sum = [
+            {
+              uuids: JSON.parse(response.data.uuids),
+              order: JSON.parse(response.data.order),
+            },
+          ];
+          console.log(sum);
+          commit("setStatements", sum);
         })
         .catch((error) => {
           console.error("Error fetching statements:", error);
