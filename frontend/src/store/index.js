@@ -12,9 +12,12 @@ export default createStore({
     isOpenSidebar: (state) => state.isOpenSidebar,
     statementNumber: (state) => {
       const statements = state.statements[0] || { uuids: [], order: [] };
-      return statements.uuids.map((uuid, index) => ({
+      const showLast = 6;
+      const start = Math.max(statements.uuids.length - showLast, 0);
+
+      return statements.uuids.slice(start).map((uuid, index) => ({
         uuid: uuid,
-        order: statements.order[index],
+        order: statements.order[start + index],
         route: `/statement/${uuid}`,
       }));
     },
