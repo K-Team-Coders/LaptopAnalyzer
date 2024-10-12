@@ -73,10 +73,10 @@ async def upload_data(
     # Call the model to process the files and get defect boxes and classes (if needed)
     boxes = []
     classes = []
-    # for file in file_paths:
-    #     box, defect_class = model_usage(file)  # Assuming this function returns the coordinates and class
-    #     boxes.append(box)
-    #     classes.append(defect_class)
+    for file in file_paths:
+        box, defect_class = model_usage(file)  # Assuming this function returns the coordinates and class
+        boxes.append(box)
+        classes.append(defect_class)
 
     # Create appeal
     appeal = Appeal(
