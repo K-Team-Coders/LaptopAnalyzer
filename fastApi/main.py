@@ -1,11 +1,14 @@
 import json
+import os
 import uuid
 from contextlib import asynccontextmanager
 from typing import List
 
 from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecations
+from starlette.responses import FileResponse
 
+from fastApi.auxilary_function.document_forming.core import DocFormater
 from fastApi.auxilary_function.format_appeal_response import format_appeal_response
 from fastApi.auxilary_function.model_connecter import model_usage
 from fastApi.auxilary_function.save_files import save_files
@@ -131,6 +134,69 @@ def get_all_uuids(db: Session = Depends(get_db)):
     uuids = [str(appeal.uuid) for appeal in appeals]
     order = [str(appeal.order_id) for appeal in appeals]
     return {"uuids": json.dumps(uuids), "order": json.dumps(order)}
+
+
+@app.get("/doc_by_uuid/{uuid}")
+async def get_doc_by_uuid(uuid: str, db: Session = Depends(get_db)):
+    # Fetch the appeal by UUID
+    appeal = db.query(Appeal).filter(Appeal.uuid == uuid).first()
+
+    if not appeal:
+        raise HTTPException(status_code=404, detail="Appeal not found")
+
+    # Fetch the corresponding result by appeal_id
+    result = db.query(Result).filter(Result.appeal_id == appeal.uuid).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found for this appeal")
+
+    executor = db.query(Executor).filter(Executor.uuid == appeal.executor_id).first()
+    if not executor:
+        raise HTTPException(status_code=404, detail="Executor not found for this appeal")
+
+    customer = db.query(Customer).filter(Customer.uuid == appeal.customer_id).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found for this appeal")
+
+    # Prepare the data for the document
+    template_data = {
+        'appeal_order': str(appeal.order_id),
+        'executor_name': executor.name,
+        'executor_phone': executor.phone_number,
+        'executor_address': executor.address,
+        'customer_name': customer.name,
+        'customer_address': customer.address,
+        'customer_phone': customer.phone_number,
+        'laptop_firm': appeal.laptop_firm,
+        'laptop_model': appeal.laptop_model,
+        'laptop_serial_number': appeal.laptop_serial_number,
+        'commission_date': appeal.commission_date,
+        'created_at': datetime.now().strftime('%Y-%m-%d'),
+
+        # Prepare content with photos and defect details
+        'content': [
+            {
+                "photo": file_path,  # Check if file path exists
+                "defects": [
+                    {
+                        "coords": box,
+                        "name": defect_class
+                    }
+                    for box, defect_class in zip(result.defect_coords, result.defect_class)
+                ]
+            }
+            for file_path in result.defect_photo_path  # Ensure it's a valid list of paths
+        ]
+    }
+
+    # Create an instance of DocFormater
+    doc_formater = DocFormater()
+
+    # Generate and save the document
+    save_path = doc_formater.make_and_save_document(template_data)
+
+    # Return the generated document as a response
+    return FileResponse(save_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        filename=os.path.basename(save_path))
 
 
 if __name__ == '__main__':
