@@ -36,7 +36,7 @@ appeals = Table(
     Column("laptop_model", String,nullable = False),
     Column("commission_date", TIMESTAMP, nullable = False),
     Column("customer_text", Text, default = ""),
-    Column("created_at", DateTime, default = datetime)
+    Column("created_at", DateTime, default = datetime.now()))
 )
 
 results = Table(
