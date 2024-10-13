@@ -28,8 +28,8 @@ class AppealBase(BaseModel):
 class ResultBase(BaseModel):
     appeal_id: UUID
     defect_photo_path: List[str]  # Change to List[str] for multiple photo paths
-    defect_coords: List[List[int]]  # Change to List[List[int]] for nested coordinates
-    defect_class: List[str]  # Change to List[str] for multiple defect classes
+    defect_coords: List[List[List[int]]]  # Change to List[List[int]] for nested coordinates
+    defect_class: List[List[str]]  # Change to List[str] for multiple defect classes
 
 
 class UpdateAppealRequest(BaseModel):

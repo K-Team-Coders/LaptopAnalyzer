@@ -9,6 +9,10 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+def generate_random_order_id():
+    return random.randint(0, 999999)
+
+
 class Customer(Base):
     __tablename__ = "customers"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -32,7 +36,7 @@ class Executor(Base):
 class Appeal(Base):
     __tablename__ = "appeals"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    order_id = Column(Integer, random.randint(0, 999999))
+    order_id = Column(Integer,  default=generate_random_order_id)
     customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.uuid"))
     executor_id = Column(UUID(as_uuid=True), ForeignKey("executors.uuid"))
     laptop_serial_number = Column(String, nullable=False)
@@ -51,7 +55,7 @@ class Result(Base):
     __tablename__ = "results"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     appeal_id = Column(UUID(as_uuid=True), ForeignKey("appeals.uuid"), nullable=False)  # Foreign key to appeals.uuid
-    defect_photo_path = Column(String, nullable=False)
+    defect_photo_path = Column(ARRAY(String), nullable=False)
     defect_coords = Column(ARRAY(Integer), nullable=False)
     defect_class = Column(ARRAY(String))
 

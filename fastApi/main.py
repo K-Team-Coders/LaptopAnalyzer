@@ -1,12 +1,18 @@
 import json
 import os
+import sys
+from pathlib import Path
+sys.path.append(Path(__file__).parent.parent.__str__())
+
 import uuid
 from contextlib import asynccontextmanager
 from typing import List
 
+import loguru
 from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecations
 from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 
 from fastApi.auxilary_function.document_forming.core import DocFormater
 from fastApi.auxilary_function.format_appeal_response import format_appeal_response
@@ -34,6 +40,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+path = Path(__file__).parent.joinpath("uploads")
+app.mount("/uploads", StaticFiles(directory=path.__str__()), name="uploads")
 
 
 @asynccontextmanager
@@ -96,23 +105,25 @@ async def upload_data(
         customer=customer,
         executor=executor
     )
+
+    print("Loading")
+    # Add to session and commit
+    db.add(customer)
+    db.add(executor)
+    db.add(appeal)
+    db.commit()  # Commit to generate the UUID for appeal
+
+    # Create result after the appeal is committed
     result = Result(
         appeal_id=appeal.uuid,
         defect_photo_path=file_paths,  # This should be a list of file paths
         defect_coords=boxes,  # Store list of boxes
         defect_class=classes  # Store list of classes
     )
-    print("Loading")
-    # Add to session and commit
-    db.add(customer)
-    db.add(executor)
-    db.add(appeal)
     db.add(result)
-    db.commit()  # Commit to generate the UUID for appeal
 
-    # Create result after the appeal is committed
-
-    return {"result_uuid": "succeed"}
+    db.commit()
+    return {"result_uuid": appeal.uuid}
 
 
 @app.get("/result/{uuid}")
@@ -128,6 +139,7 @@ def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Result not found for this appeal")
 
     # Format and return the response
+    print(appeal, result)
     return format_appeal_response(appeal, result)
 
 
