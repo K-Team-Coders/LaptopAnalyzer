@@ -79,13 +79,6 @@ export default {
           isActive: this.$route.path === "/statement",
         },
         {
-          category: "Статистика",
-          name: "dashboard",
-          classed: "w-8 h-8 ml-1 ",
-          route: "/dashboard",
-          isActive: this.$route.path === "/dashboard",
-        },
-        {
           category: "Дообучение",
           name: "settings",
           classed: "w-8 h-8 ml-1 ",

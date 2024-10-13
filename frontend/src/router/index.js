@@ -20,11 +20,6 @@ const routes = [
     component: HistoryItem,
   },
   {
-    path: "/dashboard",
-    name: "dashboard",
-    component: () => import("@/views/Dashboard.vue"),
-  },
-  {
     path: "/training",
     name: "training",
     component: () => import("@/views/Training.vue"),

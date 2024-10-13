@@ -36,16 +36,17 @@
           </p>
         </div>
         <div v-else class="flex flex-wrap gap-2 w-auto px-2.5">
-          <div
+          <router-link
             v-for="item in filteredItems"
             :key="item.uuid"
+            :to="item.route"
             class="p-2 border-2 border-neutral-400 h-auto w-40 rounded-[5px] cursor-pointer hover:border-yellow-500 duration-100"
           >
-            <router-link :to="item.route">
+            <div>
               <p class="text-center font-semibold">Заключение</p>
               <p class="text-center">№ {{ item.order }}</p>
-            </router-link>
-          </div>
+            </div>
+          </router-link>
         </div>
       </div>
     </div>
