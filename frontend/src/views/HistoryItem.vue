@@ -3,6 +3,9 @@
     <div
       class="outline-1 outline shadow-[0_0px_5px_2px_rgba(0,0,0,0.1)] rounded-[5px] h-full flex flex-col flex-grow overflow-y-auto"
     >
+      <div class="">
+        <Success :state="this.isSuccess" />
+      </div>
       <div
         v-if="this.isServiceLoading"
         class="h-full w-full flex flex-col justify-center items-center"
@@ -22,28 +25,56 @@
           <div class="flex w-full">
             <div class="w-8/12 p-2">
               <div
-                class="w-full relative flex flex-col border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 py-2 px-4"
+                class="flex flex-col border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 p-4"
               >
-                <div
-                  class="flex items-center justify-center w-full h-96 relative"
-                >
-                  <div class="flex justify-center w-full">
+                <div class="w-full flex gap-4">
+                  <div class="relative">
                     <img
                       :src="fileArr[activeIndex]?.defect_photo_path"
-                      class="w-auto h-96 rounded-lg"
                       alt="active image"
+                      @load="handleImageLoad"
+                      ref="imageElement"
+                      class="w-2/3 rounded-lg"
                     />
                     <Rectangle
                       v-for="(defect, index) in fileArr[activeIndex]?.defects ||
                       []"
                       :key="index"
-                      :coords="defect.coords"
+                      :coords="scaleCoords(defect.coords)"
                       :name="defect.name"
                       @update-defect="updateDefect(activeIndex, index, $event)"
                     />
                   </div>
-                </div>
 
+                  <div class="flex flex-col w-1/3 space-y-4 mx-4">
+                    <h2 class="text-lg text-center font-semibold">
+                      Редактировать дефекты
+                    </h2>
+                    <div
+                      v-for="(defect, index) in fileArr[activeIndex]?.defects ||
+                      []"
+                      :key="index"
+                      class="flex items-center space-x-2"
+                    >
+                      <div class="w-full flex flex-col">
+                        <span class="font-medium text-sm"
+                          >Дефект {{ index + 1 }}:</span
+                        >
+                        <input
+                          v-model="fileArr[activeIndex].defects[index].name"
+                          class="border border-gray-300 rounded px-2 py-1 mt-2"
+                          @input="
+                            updateDefectName(
+                              activeIndex,
+                              index,
+                              $event.target.value
+                            )
+                          "
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div
                   class="flex items-center space-x-2 mt-4 overflow-x-auto max-w-[40vw] mx-auto custom-scroll"
                 >
@@ -51,9 +82,7 @@
                     v-for="(image, index) in fileArr"
                     :key="index"
                     class="w-24 h-24 border-2 rounded-md overflow-hidden cursor-pointer flex-shrink-0 relative"
-                    :class="{
-                      'border-yellow-500': index == this.activeIndex,
-                    }"
+                    :class="{ 'border-yellow-500': index == activeIndex }"
                     @click="setActive(index)"
                   >
                     <img
@@ -108,7 +137,7 @@
                 >
                 <input
                   v-model="this.expluatationDate"
-                  type="date"
+                  type="text"
                   :class="[
                     'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
                     this.errors.expluatationDate
@@ -332,16 +361,57 @@
               {{ this.errors.conclusionText }}
             </span>
           </div>
-          <div class="px-4">
-            <p
-              class="text-blue-700 text-sm hover:underline hover:text-blue-800 cursor-pointer"
+          <div class="pt-4">
+            <button
               @click="downloadFile()"
+              type="button"
+              class="px-4 py-2 bg-orange-600 rounded-md text-white outline-none shadow-lg duration-100 hover:bg-orange-700 mx-2 flex"
             >
-              Скачать заключение в формате DOCX
-            </p>
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+
+              <span class="ml-2">Скачать заключение в формате DOCX</span>
+            </button>
           </div>
           <div class="flex justify-end py-2">
             <button
+              v-if="this.isSaving"
+              disabled
+              type="button"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center"
+            >
+              <svg
+                aria-hidden="true"
+                role="status"
+                class="inline w-4 h-4 me-3 text-white animate-spin"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="#E5E7EB"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentColor"
+                />
+              </svg>
+              Сохранение...
+            </button>
+            <button
+              v-else
               type="submit"
               class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 focus:outline-none"
             >
@@ -355,6 +425,8 @@
 </template>
 <script>
 import axios from "axios";
+import Rectangle from "@/components/Rectangle.vue";
+import Success from "@/components/Success.vue";
 export default {
   data() {
     return {
@@ -372,18 +444,20 @@ export default {
       executorName: "",
       executorPhone: "",
       serviceCenterAddress: "",
-      conclusionText: "",
+      conclusionText: "Необходимо дополнительное обслуживание.",
       fileArr: [],
 
+      isSuccess: false,
       isServiceLoading: false,
+      isSaving: false,
 
       errors: {},
       activeIndex: 0,
 
-      formDates: {
-        fileArr: [],
-      },
-      isSaving: false,
+      originalWidth: 0,
+      originalHeight: 0,
+      displayWidth: 0,
+      displayHeight: 0,
     };
   },
   beforeRouteUpdate(to, from, next) {
@@ -394,6 +468,8 @@ export default {
     });
     next();
   },
+
+  components: { Rectangle, Success },
   methods: {
     onInput(event) {
       let inputValue = event.target.value.replace(/\D+/g, "");
@@ -424,8 +500,11 @@ export default {
     setActive(index) {
       this.activeIndex = index;
     },
-    updateDefect(imageIndex, defectIndex, updatedDefect) {
-      this.fileArr[imageIndex].defects[defectIndex] = updatedDefect;
+    updateDefect(index, defectIndex, updatedDefect) {
+      this.fileArr[index].defects.splice(defectIndex, 1, updatedDefect);
+    },
+    updateDefectName(imageIndex, defectIndex, newName) {
+      this.fileArr[imageIndex].defects[defectIndex].name = newName;
     },
     onInput(event) {
       const value = event.target.value.replace(/[^\d-]/g, "");
@@ -484,27 +563,33 @@ export default {
       formData.append("executorName", this.executorName);
       formData.append("executorPhone", this.executorPhone);
       formData.append("serviceCenterAddress", this.serviceCenterAddress);
-      formData.append("conclusionText", this.conclusionText);
 
-      if (this.formDates.fileArr && this.formDates.fileArr.length) {
-        this.formDates.fileArr.forEach((file, index) => {
-          formData.append(`files`, file);
-        });
-      }
       try {
         this.isSending = true;
+        this.isSaving = true;
+        const file_arr = this.fileArr;
         const response = await axios.post(
           `http://${process.env.VUE_APP_IP}:8000/update_appeal/${this.id}`,
-          formData,
+          { formData, file_arr },
           {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
         console.log("Response from server:", response.data);
         this.isSending = false;
+        this.isSaving = false;
+        this.isSuccess = true;
+        setTimeout(() => {
+          this.isSuccess = false;
+        }, 2000);
       } catch (error) {
         console.error("Error sending data:", error);
         this.isSending = false;
+        this.isSaving = false;
+        this.isSuccess = true;
+        setTimeout(() => {
+          this.isSuccess = false;
+        }, 2000);
       }
     },
     async getHistoryItem() {
@@ -536,7 +621,7 @@ export default {
       this.serviceCenterAddress = data.executor_address;
 
       this.fileArr = data.content.map((item) => ({
-        defect_photo_path: item.defect_photo_path,
+        defect_photo_path: `http://${process.env.VUE_APP_IP}:8000${item.defect_photo_path}`,
         defects: item.defects.map((defect) => ({
           name: defect.name || defect.class || "Unknown",
           coords: defect.coords,
@@ -563,6 +648,43 @@ export default {
         .catch((error) => {
           console.error("Error downloading file:", error);
         });
+    },
+    handleImageLoad(event) {
+      const { naturalWidth, naturalHeight } = event.target;
+      this.originalWidth = naturalWidth;
+      this.originalHeight = naturalHeight;
+
+      this.$nextTick(() => {
+        const { clientWidth, clientHeight } = this.$refs.imageElement;
+        this.displayWidth = clientWidth;
+        this.displayHeight = clientHeight;
+      });
+    },
+    scaleCoords(coords) {
+      const scaleX = this.displayWidth / this.originalWidth;
+      const scaleY = this.displayHeight / this.originalHeight;
+      return [
+        coords[0] * scaleX,
+        coords[1] * scaleY,
+        coords[2] * scaleX,
+        coords[3] * scaleY,
+      ];
+    },
+    updateDefect(activeIndex, index, { coords, name }) {
+      const scaleX = this.originalWidth / this.displayWidth;
+      const scaleY = this.originalHeight / this.displayHeight;
+      const newCoords = [
+        coords[0] * scaleX,
+        coords[1] * scaleY,
+        coords[2] * scaleX,
+        coords[3] * scaleY,
+      ];
+
+      this.fileArr[activeIndex].defects[index] = {
+        ...this.fileArr[activeIndex].defects[index],
+        coords: newCoords,
+        name,
+      };
     },
   },
   watch: {
