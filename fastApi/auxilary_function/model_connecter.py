@@ -9,8 +9,8 @@ def model_usage(img_path: str):
     support_model = KTeamYoloFinetune(path=actual_path_support)
     support_boxes, support_classes, _ = support_model(img_path)
 
-    actual_path_phusical = KTeamYoloFinetune(path=actual_path_support)
-    phusical_boxes, phusical_classes, _ = actual_path_phusical(img_path)
+    phusical_model = KTeamYoloFinetune(path=actual_path_phusical)
+    phusical_boxes, phusical_classes, _ = phusical_model(img_path)
 
     boxes = []
     boxes.extend(support_boxes)
