@@ -10,7 +10,7 @@ from fastapi import UploadFile
 
 from .document_forming.core import DocFormater
 
-directory_path = "uploads/"
+directory_path = "fastApi/uploads/"
 DOC_FORMATTER = DocFormater()
 
 # Check if the directory exists

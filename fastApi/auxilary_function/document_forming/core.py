@@ -19,10 +19,12 @@ class DocFormater():
             logger.error("Template loading error!")
             return
 
-    def _draw_rectangle(self, image, coords, name):
-        image = cv2.rectangle(image, (coords[0], coords[1]), (coords[0] + coords[2], coords[1] + coords[3]),
-                              (36, 255, 12), 60)
-        cv2.putText(image, name, (coords[0], coords[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 60)
+    def _draw_rectangle(self, image, list_coords, names):
+        for coords, name in zip(list_coords, names):
+            logger.info(f"Drawing rectangle for {name} at {coords}")
+            image = cv2.rectangle(image, (coords[0], coords[1]), (coords[0] + coords[2], coords[1] + coords[3]),
+                                  (36, 255, 12), 60)
+            cv2.putText(image, name, (coords[0], coords[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 60)
         return image
 
     def _make_inline_image(self, image):
@@ -41,12 +43,15 @@ class DocFormater():
             # Проверяем, существует ли файл и является ли это файлом (а не директорией)
             if photo_path and Path(photo_path).is_file():
                 # Загружаем изображение
+
                 image = cv2.imread(photo_path)
                 if image is None:
                     logger.error(f"Не удалось загрузить изображение: {photo_path}")
                     item["photo"] = "Фото не удалось загрузить"
                     continue
                 # Наносим дефекты на изображение
+                logger.info(f"Наносим дефекты на изображение: {item['photo']}")
+                logger.info(f"Дефекты на изображении: {item['defects']}")
                 for defect in item["defects"]:
                     image = self._draw_rectangle(image, defect["coords"], defect["name"])
                 # Создаем изображение для вставки в документ
