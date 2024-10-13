@@ -29,21 +29,21 @@ def format_appeal_response(appeal: Appeal, result: Result):
     for index, file_path in enumerate(result.defect_photo_path):
 
         # Ensure index is within bounds for defect_class and defect_coords
+        defects = []
         if index < len(result.defect_class) and index < len(result.defect_coords):
-            defects = []
             for defect_class, coords in zip(result.defect_class[index], result.defect_coords[index]):
                 defects.append({
                     "name": defect_class,  # Class or name of the defect
                     "coords": coords  # Coordinates of the defect
                 })
-
-            content_entry = {
-                "defect_photo_path": Path('/uploads', Path(file_path).name),
-                "defects": defects
-            }
-            response['content'].append(content_entry)
         else:
             # Optionally log or handle the case where indices are out of bounds
             print(f"Warning: Index {index} is out of range for defect_class or defect_coords.")
+
+        content_entry = {
+            "defect_photo_path": Path('/uploads', Path(file_path).name),
+            "defects": defects
+        }
+        response['content'].append(content_entry)
 
     return response

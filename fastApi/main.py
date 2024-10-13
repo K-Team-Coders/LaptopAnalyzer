@@ -1,5 +1,9 @@
 import json
 import os
+import sys
+from pathlib import Path
+sys.path.append(Path(__file__).parent.parent.__str__())
+
 import uuid
 from contextlib import asynccontextmanager
 from typing import List
@@ -37,7 +41,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory="fastApi/uploads"), name="uploads")
+path = Path(__file__).parent.joinpath("uploads")
+app.mount("/uploads", StaticFiles(directory=path.__str__()), name="uploads")
 
 
 @asynccontextmanager
@@ -118,7 +123,7 @@ async def upload_data(
     db.add(result)
 
     db.commit()
-    return {"result_uuid": "succeed"}
+    return {"result_uuid": appeal.uuid}
 
 
 @app.get("/result/{uuid}")
