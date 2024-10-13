@@ -8,7 +8,7 @@ __pycache__/
 # C extensions
 *.so
 *.pt
-*.png
+
 *.jpg
 # Distribution / packaging
 .idea
