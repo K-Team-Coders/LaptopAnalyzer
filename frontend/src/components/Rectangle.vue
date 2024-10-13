@@ -6,7 +6,7 @@
   >
     <div class="absolute top-0 left-0 w-full h-full">
       <input
-        v-model="localName"
+        v-model="this.localName"
         class="absolute bg-white border border-gray-300 rounded px-1 py-0.5 text-xs"
         :style="nameInputStyle"
         @blur="emitUpdate"
@@ -75,6 +75,7 @@ export default {
       document.removeEventListener("mousemove", this.onMouseMove);
       document.removeEventListener("mouseup", this.stopDrag);
     },
+
     emitUpdate() {
       this.$emit("update-defect", {
         coords: [...this.localCoords],

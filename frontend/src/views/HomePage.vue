@@ -206,7 +206,7 @@
                 >
                 <input
                   v-model="this.expluatationDate"
-                  type="date"
+                  type="text"
                   :class="[
                     'mt-1 block w-full px-3 py-2 bg-white border rounded-md shadow-sm focus:outline-none sm:text-sm',
                     this.errors.expluatationDate
@@ -429,17 +429,17 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
-      firmName: "ASUS",
-      modelName: "GERMITION",
-      expluatationDate: "23.04.2023",
-      serialNumber: "M-1284726",
+      firmName: "SILA",
+      modelName: "MX-M250R1",
+      expluatationDate: "12.09.2023",
+      serialNumber: "MS-L123N234",
       clientName: "Иванов Д.С.",
-      clientPhone: "8-888-888-88-88",
+      clientPhone: "8-999-582-39-16",
       clientAddress: "г. Москва, ул. Профсоюзная, д. 1",
-      clientDefects: "Проблемы с экраном",
-      executorName: "Сергеева А.Ю.",
-      executorPhone: "8-111-111-11-11",
-      serviceCenterAddress: "г. Москва, ул. Ленина, д. 1",
+      clientDefects: "Проблемы с экраном. не работает тачпад",
+      executorName: "Сергеев А.Ю.",
+      executorPhone: "8-981-178-33-47",
+      serviceCenterAddress: "г. Москва, ул. Ленина, д. 13а",
       fileArr: [],
 
       isServiceLoading: false,
@@ -530,7 +530,7 @@ export default {
         try {
           this.isSending = true;
           const response = await axios.post(
-            `http://${process.env.VUE_APP_IP_CREATE_TZ}/add_data`,
+            `http://${process.env.VUE_APP_IP_CREATE_TZ}/add_data/`,
             formData,
             {
               headers: {
@@ -541,8 +541,10 @@ export default {
           console.log("Response from server:", response.data);
           this.clearForm();
           this.fetchStatements();
-          this.$router.push(`/statement/${response.data.id}`);
-          this.isSending = false;
+          setTimeout(() => {
+            this.isSending = false;
+            this.$router.push(`/statement/${response.data.result_uuid}`);
+          }, 2000);
         } catch (error) {
           console.error("Error sending data:", error);
           this.isSending = false;
