@@ -41,7 +41,7 @@
             v-slot="{ navigate, isActive, isExactActive }"
           >
             <SidebarCategory
-              :category="setting.order"
+              :category="`Заключение №` + setting.order"
               name="history"
               classed="w-8 h-8 ml-1"
               :isActive="isActive || isExactActive"

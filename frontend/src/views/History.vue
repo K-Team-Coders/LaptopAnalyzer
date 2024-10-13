@@ -11,7 +11,7 @@
           v-model="this.queryMessage"
           class="w-full p-2.5 placeholder:text-neutral-400 bg-transparent outline-none"
           type="text"
-          placeholder="Поиск..."
+          placeholder="Введите номер заключения..."
         />
         <button title="Поиск" class="mr-3">
           <img class="w-5 h-5" src="@/img/search.png" />
@@ -35,21 +35,47 @@
             Заключений нет
           </p>
         </div>
+        <div v-else class="flex flex-wrap gap-2 w-auto px-2.5">
+          <div
+            v-for="item in filteredItems"
+            :key="item.uuid"
+            class="p-2 border-2 border-neutral-400 h-auto w-40 rounded-[5px] cursor-pointer hover:border-yellow-500 duration-100"
+          >
+            <router-link :to="item.route">
+              <p class="text-center font-semibold">Заключение</p>
+              <p class="text-center">№ {{ item.order }}</p>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       queryMessage: "",
       isLoading: false,
-      items: [],
     };
   },
   methods: {},
+
+  computed: {
+    ...mapGetters(["allStatements"]),
+    items() {
+      return this.allStatements;
+    },
+    filteredItems() {
+      return this.allStatements.filter((item) => {
+        return this.queryMessage
+          .toLowerCase()
+          .split(" ")
+          .every((v) => item.order.toLowerCase().includes(v));
+      });
+    },
+  },
   mounted() {
     this.$refs.input.focus();
     this.isLoading = false;

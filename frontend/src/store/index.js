@@ -21,7 +21,15 @@ export default createStore({
         route: `/statement/${uuid}`,
       }));
     },
-    allStatements: (state) => state.statements,
+    allStatements: (state) => {
+      const statements = state.statements[0] || { uuids: [], order: [] };
+
+      return statements.uuids.map((uuid, index) => ({
+        uuid: uuid,
+        order: statements.order[index],
+        route: `/statement/${uuid}`,
+      }));
+    },
   },
   mutations: {
     toggleSidebar(state) {

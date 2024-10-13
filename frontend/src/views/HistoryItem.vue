@@ -333,14 +333,12 @@
             </span>
           </div>
           <div class="px-4">
-            <span
+            <p
               class="text-blue-700 text-sm hover:underline hover:text-blue-800 cursor-pointer"
-              @click="
-                downloadFile(this.id, this.creationDate, this.conclusionNumber)
-              "
+              @click="downloadFile()"
             >
-              Скачать заключение в формате PDF
-            </span>
+              Скачать заключение в формате DOCX
+            </p>
           </div>
           <div class="flex justify-end py-2">
             <button
@@ -496,7 +494,7 @@ export default {
       try {
         this.isSending = true;
         const response = await axios.post(
-          `http://${process.env.VUE_APP_IP}:8000/history`,
+          `http://${process.env.VUE_APP_IP}:8000/update_appeal/${this.id}`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -515,6 +513,7 @@ export default {
         const response = await axios.get(
           `http://${process.env.VUE_APP_IP}:8000/result/${this.id}`
         );
+        console.log("Response from server:", response.data);
         this.updateHistoryData(response.data);
       } catch (error) {
         console.error("Error fetching history item:", error);
@@ -544,16 +543,22 @@ export default {
         })),
       }));
     },
-    downloadFile(id, date, name) {
+    downloadFile() {
       axios
-        .get(`http://${process.env.VUE_APP_IP}/download/${id}`)
+        .get(`http://${process.env.VUE_APP_IP}:8000/doc_by_uuid/${this.id}`, {
+          responseType: "blob",
+        })
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", `Заключение от ${date} № ${name}.pdf`);
+          link.setAttribute(
+            "download",
+            `Заключение от ${this.creationDate} № ${this.conclusionNumber}.docx`
+          );
           document.body.appendChild(link);
           link.click();
+          link.remove();
         })
         .catch((error) => {
           console.error("Error downloading file:", error);
