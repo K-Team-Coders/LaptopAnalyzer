@@ -1,6 +1,11 @@
 from pathlib import Path
+from typing import Tuple
 
 from fastApi.services.appeal_operations.models import Appeal, Result
+
+from fastapi.responses import FileResponse
+from typing import Tuple, List, Dict
+from pathlib import Path
 
 
 def format_appeal_response(appeal: Appeal, result: Result):
@@ -20,10 +25,9 @@ def format_appeal_response(appeal: Appeal, result: Result):
         'content': []
     }
 
-
     # Creating the defects content
     for index, file_path in enumerate(result.defect_photo_path):
-        print(result)
+
         # Ensure index is within bounds for defect_class and defect_coords
         if index < len(result.defect_class) and index < len(result.defect_coords):
             defects = []
@@ -34,12 +38,12 @@ def format_appeal_response(appeal: Appeal, result: Result):
                 })
 
             content_entry = {
-                "defect_photo_path": str(Path.cwd().joinpath('fastApi/uploads', Path(file_path).name)),
+                "defect_photo_path": Path('/uploads', Path(file_path).name),
                 "defects": defects
             }
             response['content'].append(content_entry)
         else:
             # Optionally log or handle the case where indices are out of bounds
             print(f"Warning: Index {index} is out of range for defect_class or defect_coords.")
-    
+
     return response

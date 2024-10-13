@@ -8,6 +8,7 @@ import loguru
 from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecations
 from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 
 from fastApi.auxilary_function.document_forming.core import DocFormater
 from fastApi.auxilary_function.format_appeal_response import format_appeal_response
@@ -35,6 +36,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/uploads", StaticFiles(directory="fastApi/uploads"), name="uploads")
 
 
 @asynccontextmanager
@@ -98,7 +101,6 @@ async def upload_data(
         executor=executor
     )
 
-
     print("Loading")
     # Add to session and commit
     db.add(customer)
@@ -114,7 +116,6 @@ async def upload_data(
         defect_class=classes  # Store list of classes
     )
     db.add(result)
-
 
     db.commit()
     return {"result_uuid": "succeed"}
@@ -133,7 +134,7 @@ def get_appeal_by_uuid(uuid: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Result not found for this appeal")
 
     # Format and return the response
-    print (appeal, result)
+    print(appeal, result)
     return format_appeal_response(appeal, result)
 
 
